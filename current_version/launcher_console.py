@@ -1,9 +1,10 @@
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from maps.maps_proc import RawMapsContainer
-from engine.engine_main import GameEngine
+from argparse import ArgumentParser, \
+    RawDescriptionHelpFormatter  # pragma: no cover
+from maps.maps_proc import RawMapsContainer  # pragma: no cover
+from engine.engine_main import GameEngine  # pragma: no cover
 
 
-CURRENT_VERSION = 0
+CURRENT_VERSION = 0  # pragma: no cover
 
 
 if __name__ == '__main__':  # pragma: no cover

@@ -1,8 +1,9 @@
 from engine.enums import MoveDirection
 from engine.helper_funcs import *
+from unittest import TestCase
 
 
-class TestHelperFuncs():
+class TestHelperFuncs(TestCase):
     def test_get_x_y_modifiers(self):
         assert get_x_y_modifiers(MoveDirection.Right) == (1, 0)
         assert get_x_y_modifiers(MoveDirection.Down) == (0, 1)

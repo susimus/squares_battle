@@ -1,8 +1,8 @@
-from engine.game_object import GameObject
-from engine.enums import GameObjectType, MoveDirection
-from os import system as os_system
-from platform import system as platform_system
-from time import sleep as time_sleep
+from engine.game_object import GameObject  # pragma: no cover
+from engine.enums import GameObjectType, MoveDirection  # pragma: no cover
+from os import system as os_system  # pragma: no cover
+from platform import system as platform_system  # pragma: no cover
+from time import sleep as time_sleep  # pragma: no cover
 
 
 class ConsoleUserInterface:  # pragma: no cover

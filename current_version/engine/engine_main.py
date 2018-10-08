@@ -1,13 +1,13 @@
-from engine.collisions_proc import CollisionsProcessor
-from engine.enums import MoveDirection
-from engine.helper_funcs import get_x_y_modifiers
-from ui.cui import ConsoleUserInterface
-from platform import system as platform_system
-from msvcrt import kbhit as msvcrt_kbhit
-from msvcrt import getch as msvcrt_getch
+from engine.collisions_proc import CollisionsProcessor  # pragma: no cover
+from engine.enums import MoveDirection  # pragma: no cover
+from engine.helper_funcs import get_x_y_modifiers  # pragma: no cover
+from ui.cui import ConsoleUserInterface  # pragma: no cover
+from platform import system as platform_system  # pragma: no cover
+from msvcrt import kbhit as msvcrt_kbhit  # pragma: no cover
+from msvcrt import getch as msvcrt_getch  # pragma: no cover
 
 
-class GameEngine:
+class GameEngine:  # pragma: no cover # temp
     '''Class realize game engine that moves movable game objects'''
     def __init__(self, game_map):  # pragma: no cover
         self.collisions_proc = CollisionsProcessor(game_map)
@@ -76,3 +76,4 @@ to main game loop'''
             self.console_interface.draw_map()
 
         self.console_interface.clear_console()
+        exit(0)

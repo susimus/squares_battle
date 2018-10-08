@@ -1,9 +1,10 @@
 import pathmagic
 from engine.collisions_proc import CollisionsProcessor
 from maps.maps_proc import RawMapsContainer
+from unittest import TestCase
 
 
-class TestCollisionsProcessor():
+class TestCollisionsProcessor(TestCase):
     def test_simple_movings(self):
         collisions_proc = CollisionsProcessor(RawMapsContainer.get_map_1())
 
