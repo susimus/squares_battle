@@ -2,6 +2,7 @@ from engine.enums import MoveDirection
 
 
 def get_x_y_modifiers(move_direction):
+    '''Function return x and y modifiers out of given move direction'''
     x_modifier = 0
     y_modifier = 0
     if move_direction == MoveDirection.Right:
@@ -14,6 +15,6 @@ def get_x_y_modifiers(move_direction):
         y_modifier = -1
     else:
         raise ValueError("Helper function got not a direction. "
-                         "Gotten: " 
+                         "Gotten: "
                          + str(move_direction))
     return x_modifier, y_modifier

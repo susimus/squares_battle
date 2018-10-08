@@ -1,8 +1,9 @@
 class GameObject:
+    '''Data class that realizes main "game object" abstraction'''
     def __init__(self,
                  object_type,
-                 movable, 
-                 net_dimensions, 
+                 movable,
+                 net_dimensions,
                  current_position,
                  cell_size):
         self.object_type = object_type
