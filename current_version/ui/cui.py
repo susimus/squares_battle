@@ -28,7 +28,7 @@ class ConsoleUserInterface:  # pragma: no cover
 
     #  def add_game_object(self, game_object)
 
-    def draw_map(self):
+    def draw_map(self):  # on Linux print with curses
         '''Method draws current game map in console'''
         self.clear_console()
         for y in range(len(self.game_map[0])):
@@ -38,9 +38,7 @@ class ConsoleUserInterface:  # pragma: no cover
                 elif self.game_map[x][y][0].object_type \
                         == GameObjectType.Player:
                     print('#', end=' ')
-            print()
-
-        time_sleep(0.01)
+            print('\r')
 
     def move_object_on_position(self, obj_position, x_modifier, y_modifier):
         '''Method moves game object depending on given direction and object \
