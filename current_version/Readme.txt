@@ -13,7 +13,7 @@
     ТРЕБОВАНИЯ
     
 -- Python 3.5
--- Windows
+-- Windows или Linux
 
     СОСТАВ
     
