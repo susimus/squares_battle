@@ -7,7 +7,7 @@ try:  # pragma: no cover
     from msvcrt import \
         kbhit as msvcrt_kbhit, \
         getch as msvcrt_getch
-except ModuleNotFoundError:  # pragma: no cover
+except ImportError:  # pragma: no cover
     pass
 try:  # pragma: no cover
     from curses import \
@@ -18,7 +18,7 @@ try:  # pragma: no cover
         KEY_LEFT as curses_KEY_LEFT, \
         KEY_RIGHT as curses_KEY_RIGHT, \
         KEY_UP as curses_KEY_UP
-except ModuleNotFoundError:  # pragma: no cover
+except ImportError:  # pragma: no cover
     pass
 
 
