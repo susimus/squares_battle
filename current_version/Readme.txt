@@ -1,4 +1,7 @@
-    SQUERS BATTLE
+TODO : Update
+
+
+    SQUARES BATTLE
 
 Версия: 0
   
