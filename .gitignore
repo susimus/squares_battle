@@ -1,5 +1,7 @@
-debug.py
 tox.ini
 .coverage
 __pycache__/
 .pytest_cache/
+
+debug.py
+before_release.txt

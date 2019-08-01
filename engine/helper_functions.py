@@ -1,5 +1,5 @@
 from engine.game_objects import MoveDirection
-
+# TODO: Move this to engine
 
 def get_x_y_modifiers(move_direction):
     """Function return x and y modifiers out of given move direction"""
