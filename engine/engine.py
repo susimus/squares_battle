@@ -1,18 +1,3 @@
-from dataclasses import dataclass
-
-
-@dataclass
-class GameVector:
-    """Vector of two coordinates: X, Y.
-
-All positions and positions' modifiers in game are vectors of X and Y coordinates
-    """
-    x: int = 0
-    y: int = 0
-
-    def __add__(self, other_vector):
-        return GameVector(self.x + other_vector.x, self.y + other_vector.y)
-
 
 class GameEngine:  # pragma: no cover # temp pragma
     """Class realize game engine that moves movable game objects"""

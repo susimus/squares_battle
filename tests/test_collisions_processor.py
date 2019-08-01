@@ -1,6 +1,6 @@
-from unittest import TestCase, main as unittest_main
-
 from engine.collisions_processor import CollisionsProcessor
+
+from unittest import TestCase, main as unittest_main
 
 
 class CollisionsProcessorTest(TestCase):
