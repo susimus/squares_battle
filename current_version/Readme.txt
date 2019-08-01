@@ -1,4 +1,4 @@
-TODO : Update
+TODO : Update this
 
 
     SQUARES BATTLE

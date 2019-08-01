@@ -1,20 +1,18 @@
-from engine.game_object import GameObject
-from engine.enums import GameObjectType
+from engine.game_objects import (
+    GameObject,
+    GameField,
+    Player)
 
 
 class RawMapsContainer:  # pragma: no cover
-    '''Data class that contains raw game maps'''
+    """Data class that contains raw game maps"""
     @staticmethod
-    def get_map_1():  # Just field 10x10 and player at (0, 0)
-        '''Method gives raw map №1'''
+    def get_map_1():  # Just field 100x100 pixels and player at (0, 0)
+        """Method gives raw map №1"""
         game_map = []
 
-        game_map += [GameObject(
-            GameObjectType.Field,
-            False,
-            (10, 10),
-            (0, 0),
-            1)]
+        game_map.append(
+            GameField(True, (1, 2)))
 
         game_map += [GameObject(
             GameObjectType.Player,

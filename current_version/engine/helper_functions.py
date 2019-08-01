@@ -1,8 +1,8 @@
-from engine.enums import MoveDirection
+from engine.game_objects import MoveDirection
 
 
 def get_x_y_modifiers(move_direction):
-    '''Function return x and y modifiers out of given move direction'''
+    """Function return x and y modifiers out of given move direction"""
     x_modifier = 0
     y_modifier = 0
     if move_direction == MoveDirection.Right:

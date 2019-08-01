@@ -1,25 +1,23 @@
 from enum import Enum
+from dataclasses import dataclass
 
 
+@dataclass
 class GameObject:
     """Data class that realizes main "game object" abstraction"""
-    def __init__(self,
-                 object_type,
-                 movable,
-                 net_dimensions,
-                 current_position,
-                 cell_size):
-        self.object_type = object_type
-        self.movable = movable
-        self.net_dimensions = net_dimensions
-        self.current_position = current_position
-        self.cell_size = cell_size
+    movable: bool
 
 
-class GameObjectType(Enum):
-    """Class contains game object types"""
-    Field = 0
-    Player = 1
+@dataclass
+class GameField(GameObject):
+    """Data class that realizes game field abstraction"""
+    size: tuple
+
+
+@dataclass
+class Player(GameObject):
+    """Data class that realizes player abstraction"""
+    current_position: tuple  # Left top pixel position. Player is a square
 
 
 class MoveDirection(Enum):
