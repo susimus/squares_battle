@@ -34,9 +34,8 @@ class GameGUI(Canvas):
         """Method for correct Canvas initialization with not None master"""
         Canvas.__init__(self, self._widgets_root)
 
-    def init(self, input_map: GameMap):
-        self._gameObjectsPainter = self.GameObjectsPainter(input_map, self)
-
+    def _setup_appearance(self, input_map: GameMap):
+        """Sets up appearance of game Canvas"""
         self._widgets_root.title('Squares battle')
 
         self.grid(column=0, row=0, sticky=TK_NSEW)
@@ -46,6 +45,30 @@ class GameGUI(Canvas):
         self._widgets_root.resizable(False, False)
 
         self['bg'] = 'white'
+
+    _engine_as_event_listener: EventListener
+
+    def _setup_mouse_and_keyboard_bindings(self):
+        """Player's firing and moving bindings"""
+        # TODO: Mouse bindings
+        self._widgets_root.bind(
+            '<1>',
+            lambda event: print(123))
+        # self._engine_as_event_listener.key_pressed(event.keycode))
+        self.bind(
+            '<KeyRelease>',
+            lambda event: self._engine_as_event_listener.key_released(event.keycode))
+
+    def _setup_closing_binding(self):
+        """Event on window closing"""
+        # TODO
+        pass
+
+    def init(self, input_map: GameMap, input_engine_as_event_listener: EventListener):
+        self._gameObjectsPainter = self.GameObjectsPainter(input_map, self)
+        self._engine_as_event_listener = input_engine_as_event_listener
+        # TODO: For events firing add ttk_Frame that will be between root and Canvas
+        self._setup_appearance(input_map)
 
     @staticmethod
     def run_gui_loop():
