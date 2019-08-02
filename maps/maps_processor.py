@@ -1,5 +1,4 @@
-from engine.game_objects import Player
-from engine.engine import Vector2D
+from engine.game_objects import Player, Vector2D
 
 from dataclasses import dataclass
 
@@ -17,5 +16,5 @@ class GameMap:
 class RawMapsContainer:  # pragma: no cover
     @staticmethod
     def get_map_1() -> GameMap:
-        """Player only at (10, 10) position"""
-        return GameMap(Vector2D(700, 700), Player(Vector2D(10, 10)))
+        """Player only at (10, 10) position of game field with size (1200, 700)"""
+        return GameMap(Vector2D(1200, 700), Player(Vector2D(10, 10)))
