@@ -11,13 +11,28 @@ class GameObject:
     current_position: Vector2D
 
 
+# class Projectile(GameObject)
+
+
 @dataclass
-class Player:
-    """Player abstraction"""
+class BasicProjectile(GameObject):  # TODO
+    """Small projectile-sphere that just flies forward with average speed"""
+    fired_by_player: bool
+
+
+# class Platform(GameObject) # Should be painted only in gui method 'init'
+
+
+# class InterfaceObject(GameObject)
+
+
+@dataclass
+class MortalObject(GameObject):  # TODO
+    """Objects that can be destroyed during gameplay"""
     pass
 
 
 @dataclass
-class BasicProjectile:  # TODO
-    """Small projectile-sphere that just flies forward with average speed"""
-    fired_by_player: bool
+class Player(MortalObject):
+    """Player abstraction"""
+    pass
