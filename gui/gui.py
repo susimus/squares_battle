@@ -28,6 +28,8 @@ class GameGUI(Canvas):
 
         self['bg'] = 'white'
 
+    @staticmethod
+    def run_gui_loop():
         tk_mainloop()
 
     def render(self):
@@ -57,4 +59,6 @@ class GameGUI(Canvas):
     _gameObjectsPainter: GameObjectsPainter
 
     def _paint_all_game_objects(self):
+        self.delete('all')
+
         self._gameObjectsPainter.paint_player()
