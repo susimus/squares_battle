@@ -8,6 +8,25 @@ from tkinter import (
     NSEW as TK_NSEW)
 
 
+class EventListener:
+    """Interface for circular imports problem resolving.
+
+    It is impossible to have GameEngine import here and GUI import in 'engine.py' at the
+    same time so GameEngine have this interface.
+    """
+    def key_released(self, key_code: int):
+        """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
+        pass
+
+    def key_pressed(self, key_code: int):
+        """GUI thread enters this method to add pressed key to 'keysPressed' set"""
+        pass
+
+    def window_closed(self):
+        """GUI thread enters this method to switch value of '_game_closed' variable"""
+        pass
+
+
 class GameGUI(Canvas):
     _widgets_root = tk_Tk()
 
