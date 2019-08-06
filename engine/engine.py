@@ -13,7 +13,7 @@ class GameEngine(EventListener):
 
     def __init__(self, input_game_map: GameMap):
         self._game_map = input_game_map
-        self._map_updater = self.MapUpdater(input_game_map)
+        self._map_updater = self.MapUpdater(input_game_map, self._keys_pressed)
 
 #
 # Event listener methods
@@ -22,15 +22,15 @@ class GameEngine(EventListener):
     # All key codes of keys that are currently pressed. Without lock because modifying
     # appears only in 'event listener' methods. In all other places this field is just
     # read
-    _keysPressed: Set[int] = set()
+    _keys_pressed: Set[int] = set()
 
     def key_pressed(self, key_code: int):
         """GUI thread enters this method to add pressed key to 'keysPressed' set"""
-        self._keysPressed.add(key_code)
+        self._keys_pressed.add(key_code)
 
     def key_released(self, key_code: int):
         """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
-        self._keysPressed.discard(key_code)
+        self._keys_pressed.discard(key_code)
 
     _game_is_closed: bool = False
 
@@ -44,16 +44,35 @@ class GameEngine(EventListener):
 
     class MapUpdater:
         """All map state updating logic is here"""
-        _game_map: GameMap
+
+        class GameObjectsSpawner:
+            """Accumulates all game objects spawning"""
+            _game_map: GameMap
+
+            # TODO
+
+        class StateUpdater:
+            """Accumulates all game objects state updating"""
+            _game_map: GameMap
+            _keys_pressed: Set[int]
+
+            def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
+                self._game_map = input_map
+                self._keys_pressed = input_keys_pressed
+
+            def _update_player_state(self):
+                
+
+        _state_updater: StateUpdater
+        # _game_objects_spawner: GameObjectsSpawner
 
         # Optimize: Add outer class (GameEngine) as parameter?
-        def __init__(self, input_map: GameMap):
-            self._game_map = input_map
+        def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
+            self._state_updater = self.StateUpdater(input_map, input_keys_pressed)
 
         def update_map(self):
-            """Main method that should be invoked from game loop"""
+            """Main update method that should be invoked from game loop"""
             # TODO
-            pass
 
     _gui: GameGUI = GameGUI()
     _game_loop_iterations_count: int = 0
