@@ -20,18 +20,22 @@ class GameEngine(EventListener):
 #
 
     # All key codes of keys that are currently pressed. Without lock because modifying
-    # appears only in 'event listener' methods
+    # appears only in 'event listener' methods. In all other places this field is just
+    # read
     _keysPressed: Set[int] = {}
 
     def key_released(self, key_code: int):
+        """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
         self._keysPressed.remove(key_code)
 
     def key_pressed(self, key_code: int):
+        """GUI thread enters this method to add pressed key to 'keysPressed' set"""
         self._keysPressed.add(key_code)
 
     _game_closed: bool = False
 
     def window_closed(self):
+        """GUI thread enters this method to switch value of '_game_closed' variable"""
         pass
 
 #
