@@ -101,7 +101,8 @@ class GameGUI(Canvas):
                 + PaintingConst.PLAYER_SIDE_LENGTH,
                 self._rendering_map.player.current_position.y
                 + PaintingConst.PLAYER_SIDE_LENGTH,
-                fill='blue')
+                fill='blue',
+                outline='blue')
 
     _gameObjectsPainter: GameObjectsPainter
     _render_is_needed: bool = False
