@@ -7,8 +7,8 @@ class Vector2D:
 
     All positions or position modifiers in game should be vectors of two coordinates
     """
-    x: int
-    y: int
+    x: float = 0
+    y: float = 0
 
     def __add__(self, other):
         return Vector2D(self.x + other.x, self.y + other.y)
@@ -17,8 +17,7 @@ class Vector2D:
 @dataclass
 class GameObject:
     """Main "game object" abstraction"""
-    # Left top painted pixel position
-    # Optimize: Really left top? Check tkinter painting
+    # Left top pixel position
     current_position: Vector2D
 
 
