@@ -1,11 +1,12 @@
 from maps.maps_processor import GameMap
 from gui.gui import GameGUI, EventListener
+from engine.game_objects import Vector2D
 
 from time import (
     time as current_time_in_seconds,
     sleep as time_sleep)
 from threading import Thread
-from typing import Set
+from typing import Set, Dict, Callable
 
 
 class GameEngine(EventListener):
@@ -60,8 +61,28 @@ class GameEngine(EventListener):
                 self._game_map = input_map
                 self._keys_pressed = input_keys_pressed
 
-            def _update_player_state(self):
-                
+            def update_player_state(self):
+                input_move_vector: Vector2D = self._get_input_move_vector()
+                if input_move_vector.x != 0 or input_move_vector.y != 0:
+                    self._game_map.player.current_position += input_move_vector
+
+            _PLAYER_MOVE_SPEED: int = 5
+
+            def _get_input_move_vector(self) -> Vector2D:
+                """Method gets player's move vector from keyboard input"""
+                input_move_vector: Vector2D = Vector2D(0, 0)
+                keys_pressed_copy: Set[int] = set(self._keys_pressed)
+                for key_code in keys_pressed_copy:
+                    if key_code == 65:  # 'A'
+                        input_move_vector.x -= self._PLAYER_MOVE_SPEED
+                    elif key_code == 68:  # 'D'
+                        input_move_vector.x += self._PLAYER_MOVE_SPEED
+                    elif key_code == 87:  # 'W'
+                        input_move_vector.y -= self._PLAYER_MOVE_SPEED
+                    elif key_code == 83:  # 'S'
+                        input_move_vector.y += self._PLAYER_MOVE_SPEED
+
+                return input_move_vector
 
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
@@ -72,7 +93,7 @@ class GameEngine(EventListener):
 
         def update_map(self):
             """Main update method that should be invoked from game loop"""
-            # TODO
+            self._state_updater.update_player_state()
 
     _gui: GameGUI = GameGUI()
     _game_loop_iterations_count: int = 0
