@@ -24,6 +24,7 @@ class EventListener:
         pass
 
 
+# TODO: Add here launcher GUI?
 class GameGUI(Canvas):
     _widgets_root = tk_Tk()
 
@@ -31,17 +32,34 @@ class GameGUI(Canvas):
         """Method for correct Canvas initialization with not None master"""
         Canvas.__init__(self, self._widgets_root)
 
+    def init(self, input_map: GameMap, input_engine_as_event_listener: EventListener):
+        self._gameObjectsPainter = self.GameObjectsPainter(input_map, self)
+        self._engine_as_event_listener = input_engine_as_event_listener
+
+        self._setup_appearance(input_map)
+        self._setup_mouse_and_keyboard_bindings()
+
     def _setup_appearance(self, input_map: GameMap):
         """Sets up appearance of game Canvas"""
         self._widgets_root.title('Squares battle')
-
-        self.grid(column=0, row=0, sticky=TK_NSEW)
-
-        self['width'] = input_map.game_field_size.x
-        self['height'] = input_map.game_field_size.y
         self._widgets_root.resizable(False, False)
 
-        self['bg'] = 'white'
+        # WouldBeBetter recolor root's padding. This can be done with creating outer Frame
+        #  that will serve as gui's colored borders with deletion root's padding at all
+
+        self.configure(width=input_map.game_field_size.x)
+        self.configure(height=input_map.game_field_size.y)
+        self.configure(bg='deep sky blue')
+
+        # Spawn game window at the screen center based on screen size
+        screen_width = self._widgets_root.winfo_screenwidth()
+        screen_height = self._widgets_root.winfo_screenheight()
+        self._widgets_root.geometry(
+            f'+{(screen_width // 2) - (int(self["width"]) // 2)}'
+            # '- 20' because of title bar length  
+            f'+{(screen_height // 2) - (int(self["height"]) // 2) - 20}')
+
+        self.grid(sticky=TK_NSEW)
 
     _engine_as_event_listener: EventListener
 
@@ -49,27 +67,16 @@ class GameGUI(Canvas):
         """Player's firing and moving bindings"""
         # TODO: Mouse bindings
         self._widgets_root.bind(
-            '<1>',
-            lambda event: print(123))
-        # self._engine_as_event_listener.key_pressed(event.keycode))
-        self.bind(
+            '<KeyPress>',
+            lambda event: self._engine_as_event_listener.key_pressed(event.keycode))
+        self._widgets_root.bind(
             '<KeyRelease>',
             lambda event: self._engine_as_event_listener.key_released(event.keycode))
 
-    def _setup_closing_binding(self):
+    def _setup_window_closing_binding(self):
         """Event on window closing"""
         # TODO
         pass
-
-    def init(self, input_map: GameMap, input_engine_as_event_listener: EventListener):
-        self._gameObjectsPainter = self.GameObjectsPainter(input_map, self)
-        self._engine_as_event_listener = input_engine_as_event_listener
-        # TODO: For events firing add ttk_Frame that will be between root and Canvas
-        self._setup_appearance(input_map)
-
-    @staticmethod
-    def run_gui_loop():
-        tk_mainloop()
 
     def render(self):
         """Called by GameEngine when game field render is needed
@@ -77,6 +84,10 @@ class GameGUI(Canvas):
         GameEngine DO NOT wait until method '_paint_all_game_objects' execution ends
         """
         self.after(0, self._paint_all_game_objects())
+
+    @staticmethod
+    def run_gui_loop():
+        tk_mainloop()
 
     class GameObjectsPainter:
         """Contains all painting methods"""
