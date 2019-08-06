@@ -22,21 +22,21 @@ class GameEngine(EventListener):
     # All key codes of keys that are currently pressed. Without lock because modifying
     # appears only in 'event listener' methods. In all other places this field is just
     # read
-    _keysPressed: Set[int] = {}
-
-    def key_released(self, key_code: int):
-        """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
-        self._keysPressed.remove(key_code)
+    _keysPressed: Set[int] = set()
 
     def key_pressed(self, key_code: int):
         """GUI thread enters this method to add pressed key to 'keysPressed' set"""
         self._keysPressed.add(key_code)
 
-    _game_closed: bool = False
+    def key_released(self, key_code: int):
+        """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
+        self._keysPressed.discard(key_code)
+
+    _game_is_closed: bool = False
 
     def window_closed(self):
         """GUI thread enters this method to switch value of '_game_closed' variable"""
-        pass
+        self._game_is_closed = True
 
 #
 # Main game loop section
@@ -46,6 +46,7 @@ class GameEngine(EventListener):
         """All map state updating logic is here"""
         _game_map: GameMap
 
+        # Optimize: Add outer class (GameEngine) as parameter?
         def __init__(self, input_map: GameMap):
             self._game_map = input_map
 
@@ -64,7 +65,7 @@ class GameEngine(EventListener):
         self._gui.init(self._game_map, self)
 
         Thread(target=self._game_loop).start()
-        # Right here several renderings might be lost. Not so critical for debugging
+        # Right here several renderings might be lost. Not so critical
         self._gui.run_gui_loop()
 
     @staticmethod
@@ -90,12 +91,9 @@ class GameEngine(EventListener):
             (one_iteration_time - millis_in_current_second % one_iteration_time) / 1000)
 
     def _game_loop(self):
-        """Game loop has 3 parts in order: update, render, time alignment"""
-        while True:  # TODO: Change condition to 'game_is_not_closed'
+        while not self._game_is_closed:
             self._map_updater.update_map()
-            # print(self._keysPressed)
-            # Check here if game is not closed
-            # self._gui.destroy()
+
             self._gui.render()
 
             self._time_alignment()

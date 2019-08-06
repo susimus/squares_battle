@@ -33,11 +33,14 @@ class GameGUI(Canvas):
         Canvas.__init__(self, self._widgets_root)
 
     def init(self, input_map: GameMap, input_engine_as_event_listener: EventListener):
-        self._gameObjectsPainter = self.GameObjectsPainter(input_map, self)
+        self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
         self._engine_as_event_listener = input_engine_as_event_listener
 
         self._setup_appearance(input_map)
-        self._setup_mouse_and_keyboard_bindings()
+        self._setup_bindings()
+
+        # Start constant checking for rendering necessity
+        self.after(0, self._check_render)
 
     def _setup_appearance(self, input_map: GameMap):
         """Sets up appearance of game Canvas"""
@@ -63,42 +66,37 @@ class GameGUI(Canvas):
 
     _engine_as_event_listener: EventListener
 
-    def _setup_mouse_and_keyboard_bindings(self):
+    def _setup_bindings(self):
         """Player's firing and moving bindings"""
         # TODO: Mouse bindings
+
+        # EventListener bindings
         self._widgets_root.bind(
             '<KeyPress>',
             lambda event: self._engine_as_event_listener.key_pressed(event.keycode))
         self._widgets_root.bind(
             '<KeyRelease>',
             lambda event: self._engine_as_event_listener.key_released(event.keycode))
-
-    def _setup_window_closing_binding(self):
-        """Event on window closing"""
-        # TODO
-        pass
-
-    def render(self):
-        """Called by GameEngine when game field render is needed
-
-        GameEngine DO NOT wait until method '_paint_all_game_objects' execution ends
-        """
-        self.after(0, self._paint_all_game_objects())
-
-    @staticmethod
-    def run_gui_loop():
-        tk_mainloop()
+        self._widgets_root.bind(
+            '<Destroy>',
+            lambda event: self._engine_as_event_listener.window_closed())
 
     class GameObjectsPainter:
-        """Contains all painting methods"""
+        """Accumulates all painting methods"""
         _rendering_map: GameMap
         _gui: Canvas
 
-        def __init__(self, input_map: GameMap, input_gui: Canvas):
-            self._rendering_map = input_map
+        def __init__(self, input_gui: Canvas, input_map: GameMap):
             self._gui = input_gui
+            self._rendering_map = input_map
 
-        def paint_player(self):
+        def paint_all_game_objects(self):
+            """Accumulates all painting"""
+            self._gui.delete('all')
+
+            self._paint_player()
+
+        def _paint_player(self):
             self._gui.create_rectangle(
                 self._rendering_map.player.current_position.x,
                 self._rendering_map.player.current_position.y,
@@ -107,8 +105,21 @@ class GameGUI(Canvas):
                 fill='blue')
 
     _gameObjectsPainter: GameObjectsPainter
+    _render_is_needed: bool = False
 
-    def _paint_all_game_objects(self):
-        self.delete('all')
+    def render(self):
+        """Called by GameEngine when game field render is needed"""
+        self._render_is_needed = True
 
-        self._gameObjectsPainter.paint_player()
+    # WouldBeBetter: Async solution?
+    def _check_render(self):
+        """Every 2 milliseconds gui is checking if rendering is needed"""
+        if self._render_is_needed:
+            self.after(0, self._gameObjectsPainter.paint_all_game_objects())
+            self._render_is_needed = False
+
+        self.after(2, self._check_render)
+
+    @staticmethod
+    def run_gui_loop():
+        tk_mainloop()
