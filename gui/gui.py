@@ -34,10 +34,9 @@ class GameGUI(Canvas):
 
     def init(self, input_map: GameMap, input_engine_as_event_listener: EventListener):
         self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
-        self._engine_as_event_listener = input_engine_as_event_listener
 
         self._setup_appearance(input_map)
-        self._setup_bindings()
+        self._setup_bindings(input_engine_as_event_listener)
 
         # Start constant checking for rendering necessity
         self.after(0, self._check_render)
@@ -64,22 +63,20 @@ class GameGUI(Canvas):
 
         self.grid(sticky=TK_NSEW)
 
-    _engine_as_event_listener: EventListener
-
-    def _setup_bindings(self):
+    def _setup_bindings(self, engine_as_event_listener: EventListener):
         """Player's firing and moving bindings"""
         # TODO: Mouse bindings
 
         # EventListener bindings
         self._widgets_root.bind(
             '<KeyPress>',
-            lambda event: self._engine_as_event_listener.key_pressed(event.keycode))
+            lambda event: engine_as_event_listener.key_pressed(event.keycode))
         self._widgets_root.bind(
             '<KeyRelease>',
-            lambda event: self._engine_as_event_listener.key_released(event.keycode))
+            lambda event: engine_as_event_listener.key_released(event.keycode))
         self._widgets_root.bind(
             '<Destroy>',
-            lambda event: self._engine_as_event_listener.window_closed())
+            lambda event: engine_as_event_listener.window_closed())
 
     class GameObjectsPainter:
         """Accumulates all painting methods"""
