@@ -1,33 +1,43 @@
+from maps.maps_processor import GameMap
+from engine.game_objects import GameObject, Vector2D
+
+from typing import Dict, Callable, List
+from enum import Enum
+
+
+class GameEvent(Enum):
+    """Enumerates all events that can occur in process of game object moving
+
+    OK is the only event that can be caused by any game object moving. Every other
+    game event strictly refers to only one game object that caused this event"""
+    OK = object()
+
+    # TODO: Teleport Player close to game borders. Not just leave Player still
+    PLAYER_IS_OUT_HORIZONTALLY = object()
+    PLAYER_IS_OUT_VERTICALLY = object()
+    PLAYER_IS_OUT_DIAGONALLY = object()
+
 
 class CollisionsProcessor:
     """Class realize collision model in the game"""
-    pass
-#
-#     def __init__(self, game_map):
-#         self.game_map = \
-#             [[] for x in range(game_map[0].net_dimensions[0])]
-#         for x in range(game_map[0].net_dimensions[0]):
-#             self.game_map[x] = \
-#                 [[] for y in range(game_map[0].net_dimensions[1])]
-#
-#         for i in range(1, len(game_map)):
-#             obj_position = game_map[i].current_position
-#
-#             self.game_map[obj_position[0]][obj_position[1]] = [game_map[i]]
-#
-#     def object_on_position_moved(self, obj_position, x_modifier, y_modifier):
-#         '''Method moves object in collision model if it can and return True, \
-# otherwise it return False'''
-#         if obj_position[0] + x_modifier < 0 \
-#            or obj_position[0] + x_modifier >= len(self.game_map) \
-#            or obj_position[1] + y_modifier < 0 \
-#            or obj_position[1] + y_modifier >= len(self.game_map[0]):
-#             return False
-#
-#         self.game_map[
-#             obj_position[0] + x_modifier][
-#             obj_position[1] + y_modifier] = \
-#             [self.game_map[obj_position[0]][obj_position[1]][0]]
-#         self.game_map[obj_position[0]][obj_position[1]] = []
-#
-#         return True
+
+    def __init__(self, input_map: GameMap):
+        self._game_map = input_map
+
+    class Collision:
+        moving_object: GameObject
+        game_event: GameEvent
+        # May be None. For example, if game object is out of game field's borders
+        collided_object: GameObject
+
+    _game_map: GameMap
+    _get_collision_switch: Dict[
+        str,
+        Callable[[GameObject, Vector2D], List[Collision]]] = {
+
+    }
+
+    def get_collision(self, moving_object: GameObject, moving_vector: Vector2D)\
+            -> List[Collision]:
+        """Main collision acquiring method"""
+        pass
