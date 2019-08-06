@@ -97,8 +97,10 @@ class GameGUI(Canvas):
             self._gui.create_rectangle(
                 self._rendering_map.player.current_position.x,
                 self._rendering_map.player.current_position.y,
-                PaintingConst.PLAYER_SIDE_LENGTH,
-                PaintingConst.PLAYER_SIDE_LENGTH,
+                self._rendering_map.player.current_position.x
+                + PaintingConst.PLAYER_SIDE_LENGTH,
+                self._rendering_map.player.current_position.y
+                + PaintingConst.PLAYER_SIDE_LENGTH,
                 fill='blue')
 
     _gameObjectsPainter: GameObjectsPainter
