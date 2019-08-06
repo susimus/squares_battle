@@ -67,22 +67,25 @@ class GameEngine(EventListener):
                     self._game_map.player.current_position += input_move_vector
 
             _PLAYER_MOVE_SPEED: int = 5
+            _move_modifier_from_key_code: Dict[int, Vector2D] = {
+                65: Vector2D(-_PLAYER_MOVE_SPEED, 0),  # 'A'
+                68: Vector2D(_PLAYER_MOVE_SPEED, 0),  # 'D'
+                87: Vector2D(0, -_PLAYER_MOVE_SPEED),  # 'W'
+                83: Vector2D(0, _PLAYER_MOVE_SPEED)  # 'S'
+            }
 
             def _get_input_move_vector(self) -> Vector2D:
                 """Method gets player's move vector from keyboard input"""
                 input_move_vector: Vector2D = Vector2D(0, 0)
                 keys_pressed_copy: Set[int] = set(self._keys_pressed)
                 for key_code in keys_pressed_copy:
-                    if key_code == 65:  # 'A'
-                        input_move_vector.x -= self._PLAYER_MOVE_SPEED
-                    elif key_code == 68:  # 'D'
-                        input_move_vector.x += self._PLAYER_MOVE_SPEED
-                    elif key_code == 87:  # 'W'
-                        input_move_vector.y -= self._PLAYER_MOVE_SPEED
-                    elif key_code == 83:  # 'S'
-                        input_move_vector.y += self._PLAYER_MOVE_SPEED
+                    move_modifier = self._move_modifier_from_key_code.get(key_code)
+                    if move_modifier is not None:
+                        input_move_vector += move_modifier
 
                 return input_move_vector
+
+            # def _get_gravity_modifier(self) -> Vector2D:
 
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
