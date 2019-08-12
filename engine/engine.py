@@ -1,12 +1,13 @@
 from maps.maps_processor import GameMap
 from gui.gui import GameGUI, EventListener
 from engine.game_objects import Vector2D
+from engine.collisions_processor import CollisionsProcessor, Collision, GameEvent
 
 from time import (
     time as current_time_in_seconds,
     sleep as time_sleep)
 from threading import Thread
-from typing import Set, Dict, Callable
+from typing import Set, Dict, List
 
 
 class GameEngine(EventListener):
@@ -51,13 +52,30 @@ class GameEngine(EventListener):
             _game_map: GameMap
             _keys_pressed: Set[int]
 
+            _collisions_processor: CollisionsProcessor
+
             def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
                 self._game_map = input_map
                 self._keys_pressed = input_keys_pressed
+                self._collisions_processor = CollisionsProcessor(input_map)
 
             def update_player_state(self):
                 input_move_vector: Vector2D = self._get_input_move_vector()
                 if input_move_vector.x != 0 or input_move_vector.y != 0:
+                    player_collisions: List[Collision] = (
+                        self._collisions_processor.get_collisions(
+                            self._game_map.player, input_move_vector))
+                    for collision in player_collisions:
+                        if collision.game_event is GameEvent.PLAYER_IS_OUT_HORIZONTALLY:
+                            # Optimize: Teleport close to game borders
+                            input_move_vector.x = 0
+                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_VERTICALLY:
+                            # Optimize: Teleport close to game borders
+                            input_move_vector.y = 0
+                        else:
+                            raise ValueError(
+                                "Got unknown [game_event]: "
+                                + collision.game_event.name)
                     self._game_map.player.current_position += input_move_vector
 
             _PLAYER_MOVE_SPEED: int = 5
@@ -79,12 +97,12 @@ class GameEngine(EventListener):
 
                 return input_move_vector
 
+            # TODO: This method after collisions implementation
             # def _get_gravity_modifier(self) -> Vector2D:
 
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
 
-        # Optimize: Add outer class (GameEngine) as parameter?
         def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
             self._state_updater = self.StateUpdater(input_map, input_keys_pressed)
 
@@ -108,7 +126,7 @@ class GameEngine(EventListener):
         self._gui.init(self._game_map, self)
 
         Thread(target=self._game_loop, daemon=True).start()
-        # Right here several renderings might be lost. Not so critical
+        # Right here several renderings CANNOT be lost
         self._gui.run_gui_loop()
 
     @staticmethod
@@ -134,7 +152,7 @@ class GameEngine(EventListener):
             (one_iteration_time - millis_in_current_second % one_iteration_time) / 1000)
 
     def _game_loop(self):
-        # Game loop is daemon thread so this it will proceed until gui thread is closed
+        # Game loop is daemon thread so it will proceed until gui thread is closed
         while True:
             self._map_updater.update_map()
 
