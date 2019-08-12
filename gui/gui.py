@@ -21,9 +21,6 @@ class EventListener:
     def key_pressed(self, key_code: int):
         pass
 
-    def window_closed(self):
-        pass
-
 
 # TODO: Add here launcher GUI?
 class GameGUI(Canvas):
@@ -75,9 +72,6 @@ class GameGUI(Canvas):
         self._widgets_root.bind(
             '<KeyRelease>',
             lambda event: engine_as_event_listener.key_released(event.keycode))
-        self._widgets_root.bind(
-            '<Destroy>',
-            lambda event: engine_as_event_listener.window_closed())
 
     class GameObjectsPainter:
         """Accumulates all painting methods"""

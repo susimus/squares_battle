@@ -33,12 +33,6 @@ class GameEngine(EventListener):
         """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
         self._keys_pressed.discard(key_code)
 
-    _game_is_closed: bool = False
-
-    def window_closed(self):
-        """GUI thread enters this method to switch value of '_game_closed' variable"""
-        self._game_is_closed = True
-
 #
 # Main game loop section
 #
@@ -113,7 +107,7 @@ class GameEngine(EventListener):
         """Initialize game loop"""
         self._gui.init(self._game_map, self)
 
-        Thread(target=self._game_loop).start()
+        Thread(target=self._game_loop, daemon=True).start()
         # Right here several renderings might be lost. Not so critical
         self._gui.run_gui_loop()
 
@@ -140,7 +134,8 @@ class GameEngine(EventListener):
             (one_iteration_time - millis_in_current_second % one_iteration_time) / 1000)
 
     def _game_loop(self):
-        while not self._game_is_closed:
+        # Game loop is daemon thread so this it will proceed until gui thread is closed
+        while True:
             self._map_updater.update_map()
 
             self._gui.render()
