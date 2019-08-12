@@ -6,6 +6,7 @@ from tkinter import (
     Tk as tk_Tk,
     mainloop as tk_mainloop,
     NSEW as TK_NSEW)
+from threading import Event
 
 
 class EventListener:
@@ -105,18 +106,20 @@ class GameGUI(Canvas):
                 outline='blue')
 
     _gameObjectsPainter: GameObjectsPainter
-    _render_is_needed: bool = False
+    _render_is_done: Event = Event()
+    _render_is_done.set()
 
     def render(self):
         """Called by GameEngine when game field render is needed"""
-        self._render_is_needed = True
+        self._render_is_done.clear()
+        self._render_is_done.wait()
 
-    # WouldBeBetter: Async solution?
     def _check_render(self):
-        """Every 2 milliseconds gui is checking if rendering is needed"""
-        if self._render_is_needed:
-            self.after(0, self._gameObjectsPainter.paint_all_game_objects())
-            self._render_is_needed = False
+        """Every 2 milliseconds gui thread is checking if rendering is needed"""
+        if not self._render_is_done.is_set():
+            self._gameObjectsPainter.paint_all_game_objects()
+
+            self._render_is_done.set()
 
         self.after(2, self._check_render)
 

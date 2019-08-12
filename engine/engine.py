@@ -99,9 +99,15 @@ class GameEngine(EventListener):
             self._state_updater.update_player_state()
 
     _gui: GameGUI = GameGUI()
-    _game_loop_iterations_count: int = 0
-    _game_map: GameMap
     _map_updater: MapUpdater
+    _game_loop_iterations_count: int = 0
+
+    # At the same time one instance of game map can be either in the process of rendering
+    # OR updating because of instance modifications in game loop thread. Game map
+    # cloning would solve this restriction but it would be expensive and, actually,
+    # useless: if some renders or updates are lost OR require too much time then
+    # gameplay would be ruined anyway
+    _game_map: GameMap
 
     def start_game(self):
         """Initialize game loop"""
