@@ -67,21 +67,23 @@ class GameEngine(EventListener):
                             self._game_map.player, input_move_vector))
                     for collision in player_collisions:
                         if collision.game_event is GameEvent.PLAYER_IS_OUT_HORIZONTALLY:
-                            # Optimize: Teleport close to game borders
+                            # TODO: Teleport close to game field borders
                             input_move_vector.x = 0
                         elif collision.game_event is GameEvent.PLAYER_IS_OUT_VERTICALLY:
-                            # Optimize: Teleport close to game borders
+                            # TODO: Teleport close to game field borders
                             input_move_vector.y = 0
                         else:
                             raise ValueError(
                                 "Got unknown [game_event]: "
                                 + collision.game_event.name)
+
                     self._game_map.player.current_position += input_move_vector
 
             _PLAYER_MOVE_SPEED: int = 5
             _move_modifier_from_key_code: Dict[int, Vector2D] = {
                 65: Vector2D(-_PLAYER_MOVE_SPEED, 0),  # 'A'
                 68: Vector2D(_PLAYER_MOVE_SPEED, 0),  # 'D'
+                # TODO: Delete vertical movements. Add jumping
                 87: Vector2D(0, -_PLAYER_MOVE_SPEED),  # 'W'
                 83: Vector2D(0, _PLAYER_MOVE_SPEED)  # 'S'
             }

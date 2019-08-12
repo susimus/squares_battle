@@ -1,28 +1,24 @@
 from maps.maps_processor import GameMap
 from engine.game_objects import *
 
-from typing import Dict, Callable, List, TypeVar
+from typing import Dict, Callable, List, TypeVar, Optional
 from enum import Enum
+from dataclasses import dataclass
 
 
 class GameEvent(Enum):
-    """Enumerates all events that can occur in process of game object moving
-
-    OK is the only event that can be caused by any game object moving. Every other
-    game event strictly refers to only one game object that caused this event"""
-    OK = object()
-
-    # TODO: Teleport Player close to game borders. Not just leave Player still
+    """Enumerates all events that can occur in process of game object moving"""
     PLAYER_IS_OUT_HORIZONTALLY = object()
     PLAYER_IS_OUT_VERTICALLY = object()
 
 
+@dataclass
 class Collision:
     moving_object: GameObject
     game_event: GameEvent
 
     # May be 'None'. For example, if game object is out of game field's borders
-    collided_object: GameObject
+    collided_object: Optional[GameObject]
 
 
 class CollisionsProcessor:
@@ -31,6 +27,7 @@ class CollisionsProcessor:
     def __init__(self, input_map: GameMap):
         self._game_map = input_map
 
+        # Add narrow check functions into switch here
         self._narrow_check_switch = {
             "Player": self._check_player_collisions
         }
@@ -50,7 +47,9 @@ class CollisionsProcessor:
             self,
             moving_object: GameObject,
             moving_vector: Vector2D) -> List[Collision]:
-        """Main collisions acquiring method"""
+        """Main collisions acquiring method
+
+        If there is no collisions then empty list is returned"""
 
         # TODO: 'Middle' phase where every two objects' circles collision is checked.
         #  Every game object have its circle that contains this object. It is needed to
@@ -61,7 +60,9 @@ class CollisionsProcessor:
         narrow_phase_func = self._narrow_check_switch.get(
             moving_object.__class__.__name__, None)
         if narrow_phase_func is None:
-            raise ValueError('Got unknown class of [moving_object]')
+            raise ValueError(
+                'Got unknown class of [moving_object]: '
+                + moving_object.__class__.__name__)
 
         return narrow_phase_func(moving_object, moving_vector, [])
 
@@ -73,7 +74,19 @@ class CollisionsProcessor:
         result_collisions: List[Collision] = []
 
         # Game borders collisions check
-        if (player.current_position.x + moving_vector.x +)
+        if (
+                player.current_position.x + moving_vector.x
+                + PaintingConst.PLAYER_SIDE_LENGTH > self._game_map.game_field_size.x
+                or player.current_position.x + moving_vector.x < 0):
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_HORIZONTALLY, None))
+
+        if (
+                player.current_position.y + moving_vector.y
+                + PaintingConst.PLAYER_SIDE_LENGTH > self._game_map.game_field_size.y
+                or player.current_position.y + moving_vector.y < 0):
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_VERTICALLY, None))
 
         # Other collisions check
 
