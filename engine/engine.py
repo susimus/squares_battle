@@ -7,7 +7,7 @@ from time import (
     time as current_time_in_seconds,
     sleep as time_sleep)
 from threading import Thread
-from typing import Set, Dict, List
+from typing import Set, List
 
 
 class GameEngine(EventListener):
@@ -59,11 +59,16 @@ class GameEngine(EventListener):
                 self._keys_pressed = input_keys_pressed
                 self._collisions_processor = CollisionsProcessor(input_map)
 
-            _GRAVITY_MODIFIER: Vector2D = Vector2D(0, 5)
+            _jump_is_available: bool = False
 
             def update_player_state(self):
-                player_move_vector: Vector2D = (
-                        self._get_input_move_vector() + self._GRAVITY_MODIFIER)
+                # Copy in case if '_keys_pressed' will be modified during check
+                keys_pressed_copy: Set[int] = set(self._keys_pressed)
+                player_move_vector: Vector2D = Vector2D()
+
+                player_move_vector.x += self._get_horizontal_velocity(keys_pressed_copy)
+                player_move_vector.y += self._get_vertical_velocity(keys_pressed_copy)
+
                 if player_move_vector.x != 0 or player_move_vector.y != 0:
                     player_collisions: List[Collision] = (
                         self._collisions_processor.get_collisions(
@@ -87,6 +92,8 @@ class GameEngine(EventListener):
                                     # '+ 1' for closest to border drawing
                                     - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
+                            self._jump_is_available = True
+
                         elif collision.game_event is GameEvent.PLAYER_IS_OUT_UP:
                             player_move_vector.y = 0
                             self._game_map.player.current_position.y = 0
@@ -98,23 +105,44 @@ class GameEngine(EventListener):
 
                     self._game_map.player.current_position += player_move_vector
 
-            _PLAYER_MOVE_SPEED: int = 5
-            KEY_CODE_A: int = 65
-            KEY_CODE_D: int = 68
+            _PLAYER_MOVE_SPEED: int = 6
 
-            def _get_input_move_vector(self) -> Vector2D:
-                """Method gets player's move vector from keyboard input"""
-                input_move_vector: Vector2D = Vector2D(0, 0)
-                # Copy in case if '_keys_pressed' will be modified during check
-                keys_pressed_copy: Set[int] = set(self._keys_pressed)
+            _KEY_CODE_A: int = 65
+            _KEY_CODE_D: int = 68
 
-                if self.KEY_CODE_A in keys_pressed_copy:
+            def _get_horizontal_velocity(self, keys_pressed: Set[int]) -> float:
+                """Method gets player's current horizontal velocity"""
+                input_move_vector: Vector2D = Vector2D()
+
+                if self._KEY_CODE_A in keys_pressed:
                     input_move_vector.x += -self._PLAYER_MOVE_SPEED
 
-                if self.KEY_CODE_D in keys_pressed_copy:
+                if self._KEY_CODE_D in keys_pressed:
                     input_move_vector.x += self._PLAYER_MOVE_SPEED
 
-                return input_move_vector
+                return input_move_vector.x
+
+            _KEY_CODE_SPACE: int = 32
+            _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
+            _MAX_VERTICAL_VELOCITY: int = 12
+
+            _vertical_velocity: Vector2D = Vector2D()
+
+            def _get_vertical_velocity(self, keys_pressed: Set[int]) -> float:
+                """Method calculates current player's vertical velocity"""
+                if (
+                        self._KEY_CODE_SPACE in keys_pressed
+                        and self._jump_is_available):
+                    # Initial jump velocity
+                    self._vertical_velocity.y = -25
+                    self._jump_is_available = False
+                elif (self._vertical_velocity.y + self._GRAVITY_ACCELERATION.y
+                      < self._MAX_VERTICAL_VELOCITY):
+                    self._vertical_velocity.y += self._GRAVITY_ACCELERATION.y
+                else:
+                    self._vertical_velocity.y = self._MAX_VERTICAL_VELOCITY
+
+                return self._vertical_velocity.y
 
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
