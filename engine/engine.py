@@ -1,6 +1,6 @@
 from maps.maps_processor import GameMap
 from gui.gui import GameGUI, EventListener
-from engine.game_objects import Vector2D
+from engine.game_objects import *
 from engine.collisions_processor import CollisionsProcessor, Collision, GameEvent
 
 from time import (
@@ -66,12 +66,28 @@ class GameEngine(EventListener):
                         self._collisions_processor.get_collisions(
                             self._game_map.player, input_move_vector))
                     for collision in player_collisions:
-                        if collision.game_event is GameEvent.PLAYER_IS_OUT_HORIZONTALLY:
-                            # TODO: Teleport close to game field borders
+                        if collision.game_event is GameEvent.PLAYER_IS_OUT_RIGHT:
                             input_move_vector.x = 0
-                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_VERTICALLY:
-                            # TODO: Teleport close to game field borders
+                            self._game_map.player.current_position.x = (
+                                self._game_map.game_field_size.x
+                                # '+ 1' for closest to border drawing
+                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+
+                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_LEFT:
+                            input_move_vector.x = 0
+                            self._game_map.player.current_position.x = 0
+
+                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_DOWN:
                             input_move_vector.y = 0
+                            self._game_map.player.current_position.y = (
+                                    self._game_map.game_field_size.y
+                                    # '+ 1' for closest to border drawing
+                                    - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+
+                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_UP:
+                            input_move_vector.y = 0
+                            self._game_map.player.current_position.y = 0
+
                         else:
                             raise ValueError(
                                 "Got unknown [game_event]: "

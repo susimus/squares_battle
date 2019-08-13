@@ -8,8 +8,10 @@ from dataclasses import dataclass
 
 class GameEvent(Enum):
     """Enumerates all events that can occur in process of game object moving"""
-    PLAYER_IS_OUT_HORIZONTALLY = object()
-    PLAYER_IS_OUT_VERTICALLY = object()
+    PLAYER_IS_OUT_RIGHT = object()
+    PLAYER_IS_OUT_LEFT = object()
+    PLAYER_IS_OUT_UP = object()
+    PLAYER_IS_OUT_DOWN = object()
 
 
 @dataclass
@@ -74,20 +76,21 @@ class CollisionsProcessor:
         result_collisions: List[Collision] = []
 
         # Game borders collisions check
-        if (
-                player.current_position.x + moving_vector.x
-                + PaintingConst.PLAYER_SIDE_LENGTH > self._game_map.game_field_size.x
-                or player.current_position.x + moving_vector.x < 0):
+        if (player.current_position.x + PaintingConst.PLAYER_SIDE_LENGTH
+                + moving_vector.x > self._game_map.game_field_size.x):
             result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_HORIZONTALLY, None))
-
-        if (
-                player.current_position.y + moving_vector.y
-                + PaintingConst.PLAYER_SIDE_LENGTH > self._game_map.game_field_size.y
-                or player.current_position.y + moving_vector.y < 0):
+                Collision(player, GameEvent.PLAYER_IS_OUT_RIGHT, None))
+        elif player.current_position.x + moving_vector.x < 0:
             result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_VERTICALLY, None))
+                Collision(player, GameEvent.PLAYER_IS_OUT_LEFT, None))
+        if (player.current_position.y + PaintingConst.PLAYER_SIDE_LENGTH
+                + moving_vector.y > self._game_map.game_field_size.y):
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_DOWN, None))
+        elif player.current_position.y + moving_vector.y < 0:
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_UP, None))
 
-        # Other collisions check
+        # TODO: Other collisions check
 
         return result_collisions
