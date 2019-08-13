@@ -50,4 +50,4 @@ class Player(MortalObject):
 
 class PaintingConst:
     # Player is a square
-    PLAYER_SIDE_LENGTH = 50
+    PLAYER_SIDE_LENGTH = 45

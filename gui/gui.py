@@ -56,7 +56,7 @@ class GameGUI(Canvas):
         screen_height = self._widgets_root.winfo_screenheight()
         self._widgets_root.geometry(
             f'+{(screen_width // 2) - (int(self["width"]) // 2)}'
-            # '- 20' because of title bar length  
+            # '- 20' because of title bar length
             f'+{(screen_height // 2) - (int(self["height"]) // 2) - 20}')
 
         self.grid(sticky=TK_NSEW)
