@@ -59,33 +59,36 @@ class GameEngine(EventListener):
                 self._keys_pressed = input_keys_pressed
                 self._collisions_processor = CollisionsProcessor(input_map)
 
+            _GRAVITY_MODIFIER: Vector2D = Vector2D(0, 5)
+
             def update_player_state(self):
-                input_move_vector: Vector2D = self._get_input_move_vector()
-                if input_move_vector.x != 0 or input_move_vector.y != 0:
+                player_move_vector: Vector2D = (
+                        self._get_input_move_vector() + self._GRAVITY_MODIFIER)
+                if player_move_vector.x != 0 or player_move_vector.y != 0:
                     player_collisions: List[Collision] = (
                         self._collisions_processor.get_collisions(
-                            self._game_map.player, input_move_vector))
+                            self._game_map.player, player_move_vector))
                     for collision in player_collisions:
                         if collision.game_event is GameEvent.PLAYER_IS_OUT_RIGHT:
-                            input_move_vector.x = 0
+                            player_move_vector.x = 0
                             self._game_map.player.current_position.x = (
                                 self._game_map.game_field_size.x
                                 # '+ 1' for closest to border drawing
                                 - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
                         elif collision.game_event is GameEvent.PLAYER_IS_OUT_LEFT:
-                            input_move_vector.x = 0
+                            player_move_vector.x = 0
                             self._game_map.player.current_position.x = 0
 
                         elif collision.game_event is GameEvent.PLAYER_IS_OUT_DOWN:
-                            input_move_vector.y = 0
+                            player_move_vector.y = 0
                             self._game_map.player.current_position.y = (
                                     self._game_map.game_field_size.y
                                     # '+ 1' for closest to border drawing
                                     - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
                         elif collision.game_event is GameEvent.PLAYER_IS_OUT_UP:
-                            input_move_vector.y = 0
+                            player_move_vector.y = 0
                             self._game_map.player.current_position.y = 0
 
                         else:
@@ -93,7 +96,7 @@ class GameEngine(EventListener):
                                 "Got unknown [game_event]: "
                                 + collision.game_event.name)
 
-                    self._game_map.player.current_position += input_move_vector
+                    self._game_map.player.current_position += player_move_vector
 
             _PLAYER_MOVE_SPEED: int = 5
             KEY_CODE_A: int = 65
@@ -112,9 +115,6 @@ class GameEngine(EventListener):
                     input_move_vector.x += self._PLAYER_MOVE_SPEED
 
                 return input_move_vector
-
-            # TODO: This method after collisions implementation
-            # def _get_gravity_modifier(self) -> Vector2D:
 
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
