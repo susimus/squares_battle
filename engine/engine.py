@@ -145,7 +145,7 @@ class GameEngine(EventListener):
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
 
-        def update_map(self):  # pragma: no cover
+        def update_map(self):
             """Main update method that should be invoked from the game loop
 
             All update methods are here"""
