@@ -1,6 +1,6 @@
-from engine.game_objects import Player, Vector2D
-
 from dataclasses import dataclass
+
+from engine.game_objects import Player, Vector2D
 
 
 @dataclass

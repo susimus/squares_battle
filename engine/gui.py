@@ -1,12 +1,12 @@
-from maps.maps_processor import GameMap
-from engine.game_objects import PaintingConst
-
 from tkinter import (
     Canvas,
     Tk as tk_Tk,
     mainloop as tk_mainloop,
     NSEW as TK_NSEW)
 from threading import Event
+
+from maps.maps_processor import GameMap
+from engine.game_objects import PaintingConst
 
 
 class EventListener:

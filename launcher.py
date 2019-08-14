@@ -1,7 +1,7 @@
+from argparse import ArgumentParser
+
 from engine.engine import GameEngine
 from maps.maps_processor import RawMapsContainer
-
-from argparse import ArgumentParser
 
 
 GAME_VERSION = "1"

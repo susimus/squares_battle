@@ -1,9 +1,8 @@
-from maps.maps_processor import GameMap
-from engine.game_objects import *
-
 from typing import Dict, Callable, List, TypeVar, Optional
 from enum import Enum
-from dataclasses import dataclass
+
+from maps.maps_processor import GameMap
+from engine.game_objects import *
 
 
 class GameEvent(Enum):
