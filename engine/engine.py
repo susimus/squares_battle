@@ -22,11 +22,11 @@ class GameEngine(EventListener):
     # read
     _keys_pressed: Set[int] = set()
 
-    def key_pressed(self, key_code: int):  # pragma: no cover
+    def key_pressed(self, key_code: int):
         """GUI thread enters this method to add pressed key to 'keysPressed' set"""
         self._keys_pressed.add(key_code)
 
-    def key_released(self, key_code: int):  # pragma: no cover
+    def key_released(self, key_code: int):
         """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
         self._keys_pressed.discard(key_code)
 
