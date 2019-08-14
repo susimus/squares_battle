@@ -1,21 +1,16 @@
 from engine.engine import GameEngine
 from maps.maps_processor import RawMapsContainer
 
-from argparse import (
-    ArgumentParser,
-    RawDescriptionHelpFormatter)
+from argparse import ArgumentParser
 
 
-GAME_VERSION = "0"
+GAME_VERSION = "1"
 
 
 if __name__ == '__main__':  # pragma: no cover
 
     parser = ArgumentParser(
-        description='Videogame-platformer where squares fight for the win!',
-        formatter_class=RawDescriptionHelpFormatter,
-        epilog="controls:"
-               "W, A, S, D to move, 'q' to exit")
+        description='Videogame-platformer where squares fight for the win!')
 
     parser.add_argument(
         '--version',
