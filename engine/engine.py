@@ -22,22 +22,24 @@ class GameEngine(EventListener):
     # read
     _keys_pressed: Set[int] = set()
 
-    def key_pressed(self, key_code: int):
+    def key_pressed(self, key_code: int):  # pragma: no cover
         """GUI thread enters this method to add pressed key to 'keysPressed' set"""
         self._keys_pressed.add(key_code)
 
-    def key_released(self, key_code: int):
+    def key_released(self, key_code: int):  # pragma: no cover
         """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
         self._keys_pressed.discard(key_code)
 
     class MapUpdater:
         """All map state updating logic is here"""
 
-        class GameObjectsSpawner:
-            """All game objects spawning is here"""
-            _game_map: GameMap
+        def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
+            self._state_updater = self.StateUpdater(input_map, input_keys_pressed)
 
-            # TODO
+        # TODO
+        # class GameObjectsSpawner:
+        #     """All game objects spawning is here"""
+        #     _game_map: GameMap
 
         class StateUpdater:
             """All game objects state updating is here"""
@@ -54,7 +56,7 @@ class GameEngine(EventListener):
             _jump_is_available: bool = False
 
             # Optimize: Change vertical velocity to 0 when PLAYER_IS_OUT_BOTTOM is gotten
-            def update_player_state(self):
+            def update_player_state(self):  # pragma: no cover
                 # Copy in case if '_keys_pressed' will be modified during check
                 keys_pressed_copy: Set[int] = set(self._keys_pressed)
                 player_move_vector: Vector2D = Vector2D()
@@ -143,10 +145,7 @@ class GameEngine(EventListener):
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
 
-        def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
-            self._state_updater = self.StateUpdater(input_map, input_keys_pressed)
-
-        def update_map(self):
+        def update_map(self):  # pragma: no cover
             """Main update method that should be invoked from the game loop
 
             All update methods are here"""
@@ -167,7 +166,7 @@ class GameEngine(EventListener):
     # gameplay would be ruined anyway
     _game_map: GameMap
 
-    def start_game(self):
+    def start_game(self):  # pragma: no cover
         """Initialize game loop"""
         self._gui.init(self._game_map, self)
 
@@ -176,7 +175,7 @@ class GameEngine(EventListener):
         self._gui.run_gui_loop()
 
     @staticmethod
-    def _time_alignment():
+    def _time_alignment():  # pragma: no cover
         """Time alignment for CPU power saving
 
         Игра работает в режиме 60 итераций игрового цикла (обновление И рендер уровня в
@@ -197,7 +196,7 @@ class GameEngine(EventListener):
         time_sleep(
             (one_iteration_time - millis_in_current_second % one_iteration_time) / 1000)
 
-    def _game_loop(self):
+    def _game_loop(self):  # pragma: no cover
         # Game loop is in a daemon thread so it will proceed until gui thread is closed
         while True:
             self._map_updater.update_map()
