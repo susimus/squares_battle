@@ -10,12 +10,13 @@ class GameEvent(Enum):
     """Enumerates all events that can occur in process of game object moving"""
     PLAYER_IS_OUT_RIGHT = object()
     PLAYER_IS_OUT_LEFT = object()
-    PLAYER_IS_OUT_UP = object()
-    PLAYER_IS_OUT_DOWN = object()
+    PLAYER_IS_OUT_TOP = object()
+    PLAYER_IS_OUT_BOTTOM = object()
 
 
 @dataclass
 class Collision:
+    """Collision abstraction for CollisionsProcessor"""
     moving_object: GameObject
     game_event: GameEvent
 
@@ -24,7 +25,7 @@ class Collision:
 
 
 class CollisionsProcessor:
-    """Class realise collision model in the game"""
+    """Realises collision model in the game"""
 
     def __init__(self, input_map: GameMap):
         self._game_map = input_map
@@ -73,6 +74,7 @@ class CollisionsProcessor:
             player: Player,
             moving_vector: Vector2D,
             possibly_collided_objects: List[GameObject]) -> List[Collision]:
+        """All Player collisions checks are here"""
         result_collisions: List[Collision] = []
 
         # Game borders collisions check
@@ -86,10 +88,10 @@ class CollisionsProcessor:
         if (player.current_position.y + PaintingConst.PLAYER_SIDE_LENGTH
                 + moving_vector.y > self._game_map.game_field_size.y):
             result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_DOWN, None))
+                Collision(player, GameEvent.PLAYER_IS_OUT_BOTTOM, None))
         elif player.current_position.y + moving_vector.y < 0:
             result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_UP, None))
+                Collision(player, GameEvent.PLAYER_IS_OUT_TOP, None))
 
         # TODO: Other collisions check
 
