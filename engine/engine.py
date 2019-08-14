@@ -1,5 +1,5 @@
 from maps.maps_processor import GameMap
-from gui.gui import GameGUI, EventListener
+from engine.gui import GameGUI, EventListener
 from engine.game_objects import *
 from engine.collisions_processor import CollisionsProcessor, Collision, GameEvent
 
@@ -53,6 +53,7 @@ class GameEngine(EventListener):
 
             _jump_is_available: bool = False
 
+            # Optimize: Change vertical velocity to 0 when PLAYER_IS_OUT_BOTTOM is gotten
             def update_player_state(self):
                 # Copy in case if '_keys_pressed' will be modified during check
                 keys_pressed_copy: Set[int] = set(self._keys_pressed)
