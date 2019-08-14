@@ -17,10 +17,6 @@ class GameEngine(EventListener):
         self._game_map = input_game_map
         self._map_updater = self.MapUpdater(input_game_map, self._keys_pressed)
 
-#
-# Event listener methods
-#
-
     # All key codes of keys that are currently pressed. Without lock because modifying
     # appears only in 'event listener' methods. In all other places this field is just
     # read
@@ -34,21 +30,17 @@ class GameEngine(EventListener):
         """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
         self._keys_pressed.discard(key_code)
 
-#
-# Main game loop section
-#
-
     class MapUpdater:
         """All map state updating logic is here"""
 
         class GameObjectsSpawner:
-            """Accumulates all game objects spawning"""
+            """All game objects spawning is here"""
             _game_map: GameMap
 
             # TODO
 
         class StateUpdater:
-            """Accumulates all game objects state updating"""
+            """All game objects state updating is here"""
             _game_map: GameMap
             _keys_pressed: Set[int]
 
@@ -85,16 +77,16 @@ class GameEngine(EventListener):
                             player_move_vector.x = 0
                             self._game_map.player.current_position.x = 0
 
-                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_DOWN:
+                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_BOTTOM:
                             player_move_vector.y = 0
                             self._game_map.player.current_position.y = (
-                                    self._game_map.game_field_size.y
-                                    # '+ 1' for closest to border drawing
-                                    - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+                                self._game_map.game_field_size.y
+                                # '+ 1' for closest to border drawing
+                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
                             self._jump_is_available = True
 
-                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_UP:
+                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_TOP:
                             player_move_vector.y = 0
                             self._game_map.player.current_position.y = 0
 
@@ -123,6 +115,7 @@ class GameEngine(EventListener):
                 return input_move_vector.x
 
             _KEY_CODE_SPACE: int = 32
+
             _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
             _MAX_VERTICAL_VELOCITY: int = 12
 
@@ -136,9 +129,11 @@ class GameEngine(EventListener):
                     # Initial jump velocity
                     self._vertical_velocity.y = -25
                     self._jump_is_available = False
+
                 elif (self._vertical_velocity.y + self._GRAVITY_ACCELERATION.y
                       < self._MAX_VERTICAL_VELOCITY):
                     self._vertical_velocity.y += self._GRAVITY_ACCELERATION.y
+
                 else:
                     self._vertical_velocity.y = self._MAX_VERTICAL_VELOCITY
 
@@ -151,17 +146,23 @@ class GameEngine(EventListener):
             self._state_updater = self.StateUpdater(input_map, input_keys_pressed)
 
         def update_map(self):
-            """Main update method that should be invoked from game loop"""
+            """Main update method that should be invoked from the game loop
+
+            All update methods are here"""
             self._state_updater.update_player_state()
 
     _gui: GameGUI = GameGUI()
     _map_updater: MapUpdater
+
+    # Not seconds because of possible lags. If lags are presented then all game model
+    # will work fine and consistently without leaps that can occur because of seconds
+    # counting
     _game_loop_iterations_count: int = 0
 
     # At the same time one instance of game map can be either in the process of rendering
     # OR updating because of instance modifications in game loop thread. Game map
     # cloning would solve this restriction but it would be expensive and, actually,
-    # useless: if some renders or updates are lost OR require too much time then
+    # useless: if some renders or updates are lost OR require too much time -
     # gameplay would be ruined anyway
     _game_map: GameMap
 
@@ -196,7 +197,7 @@ class GameEngine(EventListener):
             (one_iteration_time - millis_in_current_second % one_iteration_time) / 1000)
 
     def _game_loop(self):
-        # Game loop is daemon thread so it will proceed until gui thread is closed
+        # Game loop is in a daemon thread so it will proceed until gui thread is closed
         while True:
             self._map_updater.update_map()
 

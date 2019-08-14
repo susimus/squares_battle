@@ -18,13 +18,15 @@ class Vector2D:
 class GameObject:
     """Main "game object" abstraction"""
     # Left top pixel position
-    current_position: Vector2D
+    current_position: Vector2D = Vector2D()
 
 
 @dataclass
 class BasicProjectile(GameObject):  # TODO
     """Small projectile-sphere that just flies forward with average speed"""
-    fired_by_player: bool
+    # If '0' then projectile fired by mob
+    # If '1' or higher then fired by Player. Number specifies Player instance
+    fired_by_player: int = 1
 
 
 # TODO: class Platform(GameObject)
@@ -35,9 +37,9 @@ class BasicProjectile(GameObject):  # TODO
 
 
 @dataclass
-class MortalObject(GameObject):  # TODO
+class MortalObject(GameObject):
     """Objects that can be destroyed during gameplay"""
-    pass
+    current_position: Vector2D = Vector2D()
 
 
 @dataclass

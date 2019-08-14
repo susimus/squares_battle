@@ -15,7 +15,7 @@ class GameMap:
 
 
 class RawMapsContainer:
+    """Contains maps initializations via code"""
     @staticmethod
     def get_map_1() -> GameMap:
-        """Player only at (10, 10) position of game field with size (1200, 700)"""
         return GameMap(Vector2D(1200, 700), Player(Vector2D(10, 10)))
