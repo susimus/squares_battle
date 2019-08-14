@@ -1,13 +1,14 @@
-from maps.maps_processor import GameMap
-from engine.gui import GameGUI, EventListener
-from engine.game_objects import *
-from engine.collisions_processor import CollisionsProcessor, Collision, GameEvent
-
 from time import (
     time as current_time_in_seconds,
     sleep as time_sleep)
 from threading import Thread
 from typing import Set, List
+
+from maps.maps_processor import GameMap
+from engine.gui import GameGUI, EventListener
+from engine.game_objects import *
+from engine.collisions_processor import (
+    CollisionsProcessor, Collision, GameEvent)
 
 
 class GameEngine(EventListener):
@@ -17,24 +18,29 @@ class GameEngine(EventListener):
         self._game_map = input_game_map
         self._map_updater = self.MapUpdater(input_game_map, self._keys_pressed)
 
-    # All key codes of keys that are currently pressed. Without lock because modifying
-    # appears only in 'event listener' methods. In all other places this field is just
-    # read
+    # All key codes of keys that are currently pressed. Without lock because
+    # modifying appears only in 'event listener' methods. In all other places
+    # this field is just read
     _keys_pressed: Set[int] = set()
 
     def key_pressed(self, key_code: int):
-        """GUI thread enters this method to add pressed key to 'keysPressed' set"""
+        """Adds pressed key to 'keysPressed' set
+
+        GUI thread enters this method"""
         self._keys_pressed.add(key_code)
 
     def key_released(self, key_code: int):
-        """GUI thread enters this method to subtract pressed key from 'keysPressed' set"""
+        """Subtracts pressed key from 'keysPressed' set
+
+        GUI thread enters this method"""
         self._keys_pressed.discard(key_code)
 
     class MapUpdater:
         """All map state updating logic is here"""
 
         def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
-            self._state_updater = self.StateUpdater(input_map, input_keys_pressed)
+            self._state_updater = self.StateUpdater(
+                input_map, input_keys_pressed)
 
         # TODO
         # class GameObjectsSpawner:
@@ -48,39 +54,46 @@ class GameEngine(EventListener):
 
             _collisions_processor: CollisionsProcessor
 
-            def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
+            def __init__(
+                    self, input_map: GameMap, input_keys_pressed: Set[int]):
                 self._game_map = input_map
                 self._keys_pressed = input_keys_pressed
                 self._collisions_processor = CollisionsProcessor(input_map)
 
             _jump_is_available: bool = False
 
-            # Optimize: Change vertical velocity to 0 when PLAYER_IS_OUT_BOTTOM is gotten
+            # Optimize: Change vertical velocity to 0 when PLAYER_IS_OUT_BOTTOM
+            #  is gotten
             def update_player_state(self):  # pragma: no cover
                 # Copy in case if '_keys_pressed' will be modified during check
                 keys_pressed_copy: Set[int] = set(self._keys_pressed)
                 player_move_vector: Vector2D = Vector2D()
 
-                player_move_vector.x += self._get_horizontal_velocity(keys_pressed_copy)
-                player_move_vector.y += self._get_vertical_velocity(keys_pressed_copy)
+                player_move_vector.x += self._get_horizontal_velocity(
+                    keys_pressed_copy)
+                player_move_vector.y += self._get_vertical_velocity(
+                    keys_pressed_copy)
 
                 if player_move_vector.x != 0 or player_move_vector.y != 0:
                     player_collisions: List[Collision] = (
                         self._collisions_processor.get_collisions(
                             self._game_map.player, player_move_vector))
                     for collision in player_collisions:
-                        if collision.game_event is GameEvent.PLAYER_IS_OUT_RIGHT:
+                        if (collision.game_event
+                                is GameEvent.PLAYER_IS_OUT_RIGHT):
                             player_move_vector.x = 0
                             self._game_map.player.current_position.x = (
                                 self._game_map.game_field_size.x
                                 # '+ 1' for closest to border drawing
                                 - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
-                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_LEFT:
+                        elif (collision.game_event
+                              is GameEvent.PLAYER_IS_OUT_LEFT):
                             player_move_vector.x = 0
                             self._game_map.player.current_position.x = 0
 
-                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_BOTTOM:
+                        elif (collision.game_event
+                              is GameEvent.PLAYER_IS_OUT_BOTTOM):
                             player_move_vector.y = 0
                             self._game_map.player.current_position.y = (
                                 self._game_map.game_field_size.y
@@ -89,7 +102,8 @@ class GameEngine(EventListener):
 
                             self._jump_is_available = True
 
-                        elif collision.game_event is GameEvent.PLAYER_IS_OUT_TOP:
+                        elif (collision.game_event
+                              is GameEvent.PLAYER_IS_OUT_TOP):
                             player_move_vector.y = 0
                             self._game_map.player.current_position.y = 0
 
@@ -98,14 +112,16 @@ class GameEngine(EventListener):
                                 "Got unknown [game_event]: "
                                 + collision.game_event.name)
 
-                    self._game_map.player.current_position += player_move_vector
+                    self._game_map.player.current_position += (
+                        player_move_vector)
 
             _PLAYER_MOVE_SPEED: int = 6
 
             _KEY_CODE_A: int = 65
             _KEY_CODE_D: int = 68
 
-            def _get_horizontal_velocity(self, keys_pressed: Set[int]) -> float:
+            def _get_horizontal_velocity(
+                    self, keys_pressed: Set[int]) -> float:
                 """Method gets player's current horizontal velocity"""
                 input_move_vector: Vector2D = Vector2D()
 
@@ -154,16 +170,16 @@ class GameEngine(EventListener):
     _gui: GameGUI = GameGUI()
     _map_updater: MapUpdater
 
-    # Not seconds because of possible lags. If lags are presented then all game model
-    # will work fine and consistently without leaps that can occur because of seconds
-    # counting
+    # Not seconds because of possible lags. If lags are presented then all game
+    # model will work fine and consistently without leaps that can occur
+    # because of seconds counting
     _game_loop_iterations_count: int = 0
 
-    # At the same time one instance of game map can be either in the process of rendering
-    # OR updating because of instance modifications in game loop thread. Game map
-    # cloning would solve this restriction but it would be expensive and, actually,
-    # useless: if some renders or updates are lost OR require too much time -
-    # gameplay would be ruined anyway
+    # At the same time one instance of game map can be either in the process of
+    # rendering OR updating because of instance modifications in game loop
+    # thread. Game map cloning would solve this restriction but it would be
+    # expensive and, actually, useless: if some renders or updates are lost
+    # OR require too much time - gameplay would be ruined anyway
     _game_map: GameMap
 
     def start_game(self):  # pragma: no cover
@@ -178,26 +194,30 @@ class GameEngine(EventListener):
     def _time_alignment():  # pragma: no cover
         """Time alignment for CPU power saving
 
-        Игра работает в режиме 60 итераций игрового цикла (обновление И рендер уровня в
-        одной итерации) в секунду.
+        Игра работает в режиме 60 итераций игрового цикла (обновление И рендер
+        уровня в одной итерации) в секунду.
 
-        По сути, секунда разбита на 60 частей. Выравнивание происходит таким образом,
-        что в начале каждой 1\60 части секунды должна начинаться КАЖДАЯ итерация
-        игрового цикла. НЕТ гарантии, что при таком подходе не будет потеряна одна из
-        1\60-ой частей секунды
+        По сути, секунда разбита на 60 частей. Выравнивание происходит таким
+        образом, что в начале каждой 1\60 части секунды должна начинаться
+        КАЖДАЯ итерация игрового цикла. НЕТ гарантии, что при таком подходе
+        не будет потеряна одна из 1\60-ой частей секунды
 
-        Таким образом, каждое обновление уровня происходит с рассчетом ТОЛЬКО на
-        текущую 1/60 часть секунды. Это позволяет избавиться от дробных величин при
-        модификации позиции движущихся объектов.
+        Таким образом, каждое обновление уровня происходит с рассчетом ТОЛЬКО
+        на текущую 1/60 часть секунды. Это позволяет избавиться от дробных
+        величин при модификации позиции движущихся объектов.
         """
         # All time below in milliseconds
         one_iteration_time: int = 1000 // 60
-        millis_in_current_second: int = int(current_time_in_seconds() * 1000) % 1000
+        millis_in_current_second: int = (
+            int(current_time_in_seconds() * 1000) % 1000)
         time_sleep(
-            (one_iteration_time - millis_in_current_second % one_iteration_time) / 1000)
+            (one_iteration_time
+             - millis_in_current_second % one_iteration_time)
+            / 1000)
 
     def _game_loop(self):  # pragma: no cover
-        # Game loop is in a daemon thread so it will proceed until gui thread is closed
+        # Game loop is in a daemon thread so it will proceed until gui thread
+        # is closed
         while True:
             self._map_updater.update_map()
 

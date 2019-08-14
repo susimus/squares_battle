@@ -5,7 +5,8 @@ from dataclasses import dataclass
 class Vector2D:
     """Vector of two coordinates: X, Y
 
-    All positions or position modifiers in game should be vectors of two coordinates
+    All positions or position modifiers in game should be vectors of two
+    coordinates
     """
     x: float = 0
     y: float = 0

@@ -54,10 +54,11 @@ class CollisionsProcessor:
 
         If there is no collisions then empty list is returned"""
 
-        # TODO: 'Middle' phase where every two objects' circles collision is checked.
-        #  Every game object have its circle that contains this object. It is needed to
-        #  compare square of sum of two radiuses and sum of squares of vector between
-        #  centers of two circles. (Not root in second case for more performance)
+        # TODO: 'Middle' phase where every two objects' circles collision is
+        #  checked. Every game object have its circle that contains this
+        #  object. It is needed to compare square of sum of two radiuses and
+        #  sum of squares of vector between centers of two circles. (Not root
+        #  in second case for more performance)
 
         # 'Narrow' phase with detailed check
         narrow_phase_func = self._narrow_check_switch.get(

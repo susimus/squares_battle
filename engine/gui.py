@@ -12,8 +12,8 @@ from threading import Event
 class EventListener:
     """Interface for circular imports problem resolving.
 
-    It is impossible to have GameEngine import here and GUI import in 'engine.py' at the
-    same time so GameEngine have this interface.
+    It is impossible to have GameEngine import here and GUI import in
+    'engine.py' at the same time so GameEngine have this interface.
     """
     def key_released(self, key_code: int):
         pass
@@ -30,7 +30,10 @@ class GameGUI(Canvas):
         """Method for correct Canvas initialization with not None master"""
         Canvas.__init__(self, self._widgets_root)
 
-    def init(self, input_map: GameMap, input_engine_as_event_listener: EventListener):
+    def init(
+            self,
+            input_map: GameMap,
+            input_engine_as_event_listener: EventListener):
         self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
 
         self._setup_appearance(input_map)
@@ -44,8 +47,9 @@ class GameGUI(Canvas):
         self._widgets_root.title('Squares battle')
         self._widgets_root.resizable(False, False)
 
-        # WouldBeBetter recolor root's padding. This can be done with creating outer Frame
-        #  that will serve as gui's colored borders with deletion root's padding at all
+        # WouldBeBetter recolor root's padding. This can be done with creating
+        #  outer Frame that will serve as gui's colored borders with deletion
+        #  root's padding at all
 
         self.configure(width=input_map.game_field_size.x)
         self.configure(height=input_map.game_field_size.y)
@@ -109,7 +113,7 @@ class GameGUI(Canvas):
         self._render_is_done.wait()
 
     def _check_render(self):
-        """Every 2 milliseconds gui thread is checking if rendering is needed"""
+        """Every 2 milliseconds checking if rendering is needed"""
         if not self._render_is_done.is_set():
             self._gameObjectsPainter.paint_all_game_objects()
 
