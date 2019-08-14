@@ -5,15 +5,16 @@ from dataclasses import dataclass
 
 @dataclass
 class GameMap:
-    # Coordinates must be positive. Immutable when game field is showing
-    game_field_size: Vector2D
+    # Size coordinates must be positive. Immutable when game field is showing
+    game_field_size: Vector2D = Vector2D()
 
-    # Single player for now
-    player: Player
-    # mobs: List[MortalObject]  # TODO
+    # TODO: Multiplayer
+    player: Player = None
+
+    # TODO: mobs: List[MortalObject]
 
 
-class RawMapsContainer:  # pragma: no cover
+class RawMapsContainer:
     @staticmethod
     def get_map_1() -> GameMap:
         """Player only at (10, 10) position of game field with size (1200, 700)"""
