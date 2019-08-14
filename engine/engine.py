@@ -120,27 +120,27 @@ class GameEngine(EventListener):
             _KEY_CODE_SPACE: int = 32
 
             _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
-            _MAX_VERTICAL_VELOCITY: int = 12
+            _MAX_VERTICAL_VELOCITY: float = 12
+            _INITIAL_JUMP_VELOCITY: float = -25
 
-            _vertical_velocity: Vector2D = Vector2D()
+            _vertical_velocity: float = 0
 
             def _get_vertical_velocity(self, keys_pressed: Set[int]) -> float:
                 """Method calculates current player's vertical velocity"""
                 if (
                         self._KEY_CODE_SPACE in keys_pressed
                         and self._jump_is_available):
-                    # Initial jump velocity
-                    self._vertical_velocity.y = -25
+                    self._vertical_velocity = self._INITIAL_JUMP_VELOCITY
                     self._jump_is_available = False
 
-                elif (self._vertical_velocity.y + self._GRAVITY_ACCELERATION.y
+                elif (self._vertical_velocity + self._GRAVITY_ACCELERATION.y
                       < self._MAX_VERTICAL_VELOCITY):
-                    self._vertical_velocity.y += self._GRAVITY_ACCELERATION.y
+                    self._vertical_velocity += self._GRAVITY_ACCELERATION.y
 
                 else:
-                    self._vertical_velocity.y = self._MAX_VERTICAL_VELOCITY
+                    self._vertical_velocity = self._MAX_VERTICAL_VELOCITY
 
-                return self._vertical_velocity.y
+                return self._vertical_velocity
 
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
