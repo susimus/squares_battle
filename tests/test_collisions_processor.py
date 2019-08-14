@@ -21,7 +21,7 @@ from engine.game_objects import Vector2D, Player, GameObject
 only_player_small_map: GameMap = GameMap(Vector2D(100, 100), Player())
 
 
-class ExceptionsTests(TestCase):
+class TestExceptions(TestCase):
     def test_unknown_moving_object_exception(self):
         with self.assertRaises(ValueError) as occurred_exc:
             CollisionsProcessor(only_player_small_map).get_collisions(
@@ -32,7 +32,7 @@ class ExceptionsTests(TestCase):
             'Got unknown class of [moving_object]: GameObject')
 
 
-class PlayerCollisionsTests(TestCase):
+class TestPlayerCollisions(TestCase):
     _collisions_processor: CollisionsProcessor = CollisionsProcessor(
         only_player_small_map)
 

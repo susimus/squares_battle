@@ -15,7 +15,7 @@ from engine.engine import GameEngine
 from maps.maps_processor import GameMap
 
 
-class VelocityGettersTests(TestCase):
+class TestVelocityGetters(TestCase):
     _state_updater: GameEngine.MapUpdater.StateUpdater = (
         GameEngine.MapUpdater.StateUpdater(GameMap(), set()))
 
