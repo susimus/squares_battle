@@ -44,7 +44,7 @@ def get_current_version() -> str:
         for _ in range(4):
             readme_file.readline()
 
-        if readme_file.readline() == '#### Версия\n':
+        if readme_file.readline().rstrip() == '#### Версия':
             readme_file.readline()
 
             return readme_file.readline().rstrip()
