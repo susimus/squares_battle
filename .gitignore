@@ -1,6 +1,11 @@
+.idea/
 tox.ini
+
+# pytest, pytest-cov
 .coverage
 __pycache__/
 .pytest_cache/
 
+# Local
 debug.py
+123    
