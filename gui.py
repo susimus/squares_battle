@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
-from configparser import (
-    ConfigParser, ParsingError as configparser_ParsingError)
+from typing import TextIO
 from sys import exit as sys_exit
 
 from engine.engine import GameEngine
@@ -32,20 +31,28 @@ def exit_with_exception(
 def get_current_version() -> str:
     """Gives current version str
 
-    Gives version based on 'config.ini' in application's folder. If data is
-    corrupted then "Cannot read 'config.ini' file" str returns
+    Gives version based on 3 and 5 lines of 'README.md' in application's
+    folder. If data cannot be read then "Cannot read 'README.md' file" str
+    returns
     """
-    config: ConfigParser = ConfigParser()
+    readme_file: TextIO
+    version_info: str
 
     try:
-        config.read('config.ini')
-    except configparser_ParsingError:
+        readme_file = open('README.md', 'r', encoding="utf8")
+
+        for _ in range(4):
+            readme_file.readline()
+
+        if readme_file.readline() == '#### Версия\n':
+            readme_file.readline()
+
+            return readme_file.readline().rstrip()
+
+    except OSError:
         pass
 
-    if 'VERSION' not in config or 'current_version' not in config['VERSION']:
-        return "Cannot read 'config.ini' file"
-    else:
-        return config['VERSION']['current_version']
+    return "Cannot read 'README.md' file"
 
 
 def run_launcher_logic():
