@@ -17,36 +17,39 @@ class Vector2D:
 
 @dataclass
 class GameObject:
-    """Main "game object" abstraction"""
     # Left top pixel position
-    current_position: Vector2D = Vector2D()
+    current_position: Vector2D
 
 
+# TODO: Implement [BasicProjectile]
 @dataclass
-class BasicProjectile(GameObject):  # TODO
+class BasicProjectile(GameObject):
     """Small projectile-sphere that just flies forward with average speed"""
-    # If '0' then projectile fired by mob
-    # If '1' or higher then fired by Player. Number specifies Player instance
-    fired_by_player: int = 1
+    # Always fired by some Player. Number specifies Player instance
+    fired_by_player: int
 
 
-# TODO: class Platform(GameObject)
-#  Should be painted only in gui method 'init'
+# TODO: Implement [BasicPlatform]
+class BasicPlatform(GameObject):
+    """Rectangle on which Player can walk"""
+    _width: int
+    _height: int
+
+    def get_width(self) -> int:
+        return self._width
+
+    def get_height(self) -> int:
+        return self._height
 
 
-# TODO: class InterfaceObject(GameObject)
+# TODO: Implement [InterfaceObject]
+class InterfaceObject(GameObject):
+    pass
 
 
 @dataclass
-class MortalObject(GameObject):
-    """Objects that can be destroyed during gameplay"""
-    current_position: Vector2D = Vector2D()
-
-
-@dataclass
-class Player(MortalObject):
-    """Player abstraction"""
-    current_position: Vector2D = Vector2D()
+class Player(GameObject):
+    pass
 
 
 class PaintingConst:
