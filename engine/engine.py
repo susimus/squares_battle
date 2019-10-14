@@ -17,22 +17,24 @@ class GameEngine(EventListener):
         """All map state updating logic is here"""
         class StateUpdater:
             """All game objects state updating is here"""
+            _KEY_CODE_A: int = 65
+            _KEY_CODE_D: int = 68
+            _KEY_CODE_SPACE: int = 32
+
+            _PLAYER_MOVE_SPEED: int = 6
+
+            _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
+            _MAX_VERTICAL_VELOCITY: float = 12
+            _INITIAL_JUMP_VELOCITY: float = -25
+
             _collisions_processor: CollisionsProcessor
 
             _game_map: GameMap
             _keys_pressed: Set[int]
 
             _jump_is_available: bool
+
             _vertical_velocity: float
-
-            _KEY_CODE_A: int = 65
-            _KEY_CODE_D: int = 68
-            _KEY_CODE_SPACE: int = 32
-
-            _PLAYER_MOVE_SPEED: int = 6
-            _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
-            _MAX_VERTICAL_VELOCITY: float = 12
-            _INITIAL_JUMP_VELOCITY: float = -25
 
             def __init__(self, game_engine: 'GameEngine'):
                 self._game_map = game_engine._game_map
