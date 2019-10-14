@@ -13,57 +13,38 @@ from engine.collisions_processor import (
 
 class GameEngine(EventListener):
     """All game logic processes here"""
-
-    def __init__(self, input_game_map: GameMap):
-        self._game_map = input_game_map
-        self._map_updater = self.MapUpdater(input_game_map, self._keys_pressed)
-
-    # All key codes of keys that are currently pressed. Without lock because
-    # modifying appears only in 'event listener' methods. In all other places
-    # this field is just read
-    _keys_pressed: Set[int] = set()
-
-    def key_pressed(self, key_code: int):
-        """Adds pressed key to 'keysPressed' set
-
-        GUI thread enters this method"""
-        self._keys_pressed.add(key_code)
-
-    def key_released(self, key_code: int):
-        """Subtracts pressed key from 'keysPressed' set
-
-        GUI thread enters this method"""
-        self._keys_pressed.discard(key_code)
-
     class MapUpdater:
         """All map state updating logic is here"""
-
-        def __init__(self, input_map: GameMap, input_keys_pressed: Set[int]):
-            self._state_updater = self.StateUpdater(
-                input_map, input_keys_pressed)
-
-        # TODO
-        # class GameObjectsSpawner:
-        #     """All game objects spawning is here"""
-        #     _game_map: GameMap
-
         class StateUpdater:
             """All game objects state updating is here"""
+            _collisions_processor: CollisionsProcessor
+
             _game_map: GameMap
             _keys_pressed: Set[int]
 
-            _collisions_processor: CollisionsProcessor
+            _jump_is_available: bool
+            _vertical_velocity: float
 
-            def __init__(
-                    self, input_map: GameMap, input_keys_pressed: Set[int]):
-                self._game_map = input_map
-                self._keys_pressed = input_keys_pressed
-                self._collisions_processor = CollisionsProcessor(input_map)
+            _KEY_CODE_A: int = 65
+            _KEY_CODE_D: int = 68
+            _KEY_CODE_SPACE: int = 32
 
-            _jump_is_available: bool = False
+            _PLAYER_MOVE_SPEED: int = 6
+            _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
+            _MAX_VERTICAL_VELOCITY: float = 12
+            _INITIAL_JUMP_VELOCITY: float = -25
 
-            # Optimize: Change vertical velocity to 0 when PLAYER_IS_OUT_BOTTOM
-            #  is gotten
+            def __init__(self, game_engine: 'GameEngine'):
+                self._game_map = game_engine._game_map
+                self._keys_pressed = game_engine._keys_pressed
+                self._collisions_processor = CollisionsProcessor(
+                    game_engine._game_map)
+
+                self._jump_is_available = False
+                self._vertical_velocity = 0
+
+            # WouldBeBetter: Change vertical velocity to 0 when
+            #  PLAYER_IS_OUT_BOTTOM is gotten
             def update_player_state(self):  # pragma: no cover
                 # Copy in case if '_keys_pressed' will be modified during check
                 keys_pressed_copy: Set[int] = set(self._keys_pressed)
@@ -115,11 +96,6 @@ class GameEngine(EventListener):
                     self._game_map.player.current_position += (
                         player_move_vector)
 
-            _PLAYER_MOVE_SPEED: int = 6
-
-            _KEY_CODE_A: int = 65
-            _KEY_CODE_D: int = 68
-
             def _get_horizontal_velocity(
                     self, keys_pressed: Set[int]) -> float:
                 """Method gets player's current horizontal velocity"""
@@ -132,14 +108,6 @@ class GameEngine(EventListener):
                     input_move_vector.x += self._PLAYER_MOVE_SPEED
 
                 return input_move_vector.x
-
-            _KEY_CODE_SPACE: int = 32
-
-            _GRAVITY_ACCELERATION: Vector2D = Vector2D(0, 2.5)
-            _MAX_VERTICAL_VELOCITY: float = 12
-            _INITIAL_JUMP_VELOCITY: float = -25
-
-            _vertical_velocity: float = 0
 
             def _get_vertical_velocity(self, keys_pressed: Set[int]) -> float:
                 """Method calculates current player's vertical velocity"""
@@ -158,8 +126,16 @@ class GameEngine(EventListener):
 
                 return self._vertical_velocity
 
+        # TODO
+        # class GameObjectsSpawner:
+        #     """All game objects spawning is here"""
+        #     _game_map: GameMap
+
         _state_updater: StateUpdater
         # _game_objects_spawner: GameObjectsSpawner
+
+        def __init__(self, game_engine: 'GameEngine'):
+            self._state_updater = self.StateUpdater(game_engine)
 
         def update_map(self):
             """Main update method that should be invoked from the game loop
@@ -167,13 +143,19 @@ class GameEngine(EventListener):
             All update methods are here"""
             self._state_updater.update_player_state()
 
-    _gui: GameGUI = GameGUI()
     _map_updater: MapUpdater
+
+    _gui: GameGUI
+
+    # All key codes of keys that are currently pressed. Without lock because
+    # modifying appears only in 'event listener' methods. In all other places
+    # this field is just read
+    _keys_pressed: Set[int]
 
     # Not seconds because of possible lags. If lags are presented then all game
     # model will work fine and consistently without leaps that can occur
     # because of seconds counting
-    _game_loop_iterations_count: int = 0
+    _game_loop_iterations_count: int
 
     # At the same time one instance of game map can be either in the process of
     # rendering OR updating because of instance modifications in game loop
@@ -181,6 +163,26 @@ class GameEngine(EventListener):
     # expensive and, actually, useless: if some renders or updates are lost
     # OR require too much time - gameplay would be ruined anyway
     _game_map: GameMap
+
+    def __init__(self, input_game_map: GameMap):
+        self._keys_pressed = set()
+        self._gui = GameGUI()
+        self._game_loop_iterations_count = 0
+
+        self._game_map = input_game_map
+        self._map_updater = self.MapUpdater(self)
+
+    def key_pressed(self, key_code: int):
+        """Adds pressed key to 'keysPressed' set
+
+        GUI thread enters this method"""
+        self._keys_pressed.add(key_code)
+
+    def key_released(self, key_code: int):
+        """Subtracts pressed key from 'keysPressed' set
+
+        GUI thread enters this method"""
+        self._keys_pressed.discard(key_code)
 
     def start_game(self):  # pragma: no cover
         """Initialize game loop"""
