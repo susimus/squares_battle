@@ -3,7 +3,7 @@
 Squares fight each other for the win!
 
 #### Версия 
-1
+2 (WIP)
 
 #### Автор 
 Семен Вяцков
@@ -14,7 +14,7 @@ Squares fight each other for the win!
 
 #### ТРЕБОВАНИЯ
 
-- Python 3.7+
+- Python 3.7.4+
 - Windows 10
 
 #### СОСТАВ
