@@ -1,7 +1,5 @@
-from unittest import TestCase
+from unittest import TestCase, main as unittest_main
 from typing import List
-
-# Parent directory appending imports
 from os.path import (
     join as os_path_join,
     dirname as os_path_dirname,
@@ -21,7 +19,7 @@ from engine.game_objects import Vector2D, Player, GameObject
 only_player_small_map: GameMap = GameMap(Vector2D(100, 100), Player())
 
 
-class TestExceptions(TestCase):
+class ExceptionsTests(TestCase):
     def test_unknown_moving_object_exception(self):
         with self.assertRaises(ValueError) as occurred_exc:
             CollisionsProcessor(only_player_small_map).get_collisions(
@@ -32,7 +30,7 @@ class TestExceptions(TestCase):
             'Got unknown class of [moving_object]: GameObject')
 
 
-class TestPlayerCollisions(TestCase):
+class PlayerCollisionsTests(TestCase):
     _collisions_processor: CollisionsProcessor = CollisionsProcessor(
         only_player_small_map)
 
@@ -94,3 +92,7 @@ class TestPlayerCollisions(TestCase):
                 only_player_small_map.player, Vector2D(0, 10)))
 
         assert len(no_border_collision) == 0
+
+
+if __name__ == '__main__':
+    unittest_main()

@@ -1,6 +1,4 @@
-from unittest import TestCase
-
-# Parent directory appending imports
+from unittest import TestCase, main as unittest_main
 from os.path import (
     join as os_path_join,
     dirname as os_path_dirname,
@@ -15,7 +13,7 @@ from engine.engine import GameEngine
 from maps.maps_processor import GameMap
 
 
-class TestVelocityGetters(TestCase):
+class VelocityGettersTests(TestCase):
     _state_updater: GameEngine.MapUpdater.StateUpdater = (
         GameEngine.MapUpdater.StateUpdater(GameMap(), set()))
 
@@ -54,3 +52,7 @@ class TestVelocityGetters(TestCase):
         self._state_updater._vertical_velocity = 100
 
         assert self._state_updater._get_vertical_velocity(set()) == 12
+
+
+if __name__ == '__main__':
+    unittest_main()
