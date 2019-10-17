@@ -65,6 +65,8 @@ class GameGUI(Canvas):
             self,
             input_map: GameMap,
             input_engine_as_event_listener: EventListener):
+        self._widgets_root = tk_Tk()
+
         self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
 
         self._render_is_done = Event()
