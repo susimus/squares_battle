@@ -47,8 +47,8 @@ class GameGUI(Canvas):
         self._widgets_root.resizable(False, False)
 
         # WouldBeBetter recolor root's padding. This can be done with creating
-        #  outer Frame that will serve as gui's colored borders with deletion
-        #  root's padding at all
+        #  outer Frame that will serve as user_interface's colored borders with
+        #  deletion root's padding at all
 
         self.configure(width=input_map.game_field_size.x)
         self.configure(height=input_map.game_field_size.y)
