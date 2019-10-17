@@ -220,8 +220,8 @@ class GameEngine(EventListener):
             / 1000)
 
     def _game_loop(self):  # pragma: no cover
-        # Game loop is in a daemon thread so it will proceed until user_interface thread
-        # is closed
+        # Game loop is in a daemon thread so it will proceed until user_
+        # interface thread is closed
         while True:
             self._map_updater.update_map()
 
