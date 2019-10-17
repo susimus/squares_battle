@@ -23,7 +23,37 @@ class EventListener:
 
 
 class GameGUI(Canvas):
-    _widgets_root = tk_Tk()
+    class GameObjectsPainter:
+        """Accumulates all painting methods"""
+        _rendering_map: GameMap
+        _gui: Canvas
+
+        def __init__(self, input_gui: Canvas, input_map: GameMap):
+            self._gui = input_gui
+            self._rendering_map = input_map
+
+        def paint_all_game_objects(self):
+            """Accumulates all painting"""
+            self._gui.delete('all')
+
+            self._paint_player()
+
+        def _paint_player(self):
+            self._gui.create_rectangle(
+                self._rendering_map.player.current_position.x,
+                self._rendering_map.player.current_position.y,
+                self._rendering_map.player.current_position.x
+                + PaintingConst.PLAYER_SIDE_LENGTH,
+                self._rendering_map.player.current_position.y
+                + PaintingConst.PLAYER_SIDE_LENGTH,
+                fill='blue',
+                outline='blue')
+
+    _widgets_root: tk_Tk
+
+    _gameObjectsPainter: GameObjectsPainter
+
+    _render_is_done: Event
 
     def __init__(self):
         """Method for correct Canvas initialization with not None master"""
@@ -33,7 +63,12 @@ class GameGUI(Canvas):
             self,
             input_map: GameMap,
             input_engine_as_event_listener: EventListener):
+        self._widgets_root = tk_Tk()
+
         self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
+
+        self._render_is_done = Event()
+        self._render_is_done.set()
 
         self._setup_appearance(input_map)
         self._setup_bindings(input_engine_as_event_listener)
@@ -75,36 +110,6 @@ class GameGUI(Canvas):
         self._widgets_root.bind(
             '<KeyRelease>',
             lambda event: engine_as_event_listener.key_released(event.keycode))
-
-    class GameObjectsPainter:
-        """Accumulates all painting methods"""
-        _rendering_map: GameMap
-        _gui: Canvas
-
-        def __init__(self, input_gui: Canvas, input_map: GameMap):
-            self._gui = input_gui
-            self._rendering_map = input_map
-
-        def paint_all_game_objects(self):
-            """Accumulates all painting"""
-            self._gui.delete('all')
-
-            self._paint_player()
-
-        def _paint_player(self):
-            self._gui.create_rectangle(
-                self._rendering_map.player.current_position.x,
-                self._rendering_map.player.current_position.y,
-                self._rendering_map.player.current_position.x
-                + PaintingConst.PLAYER_SIDE_LENGTH,
-                self._rendering_map.player.current_position.y
-                + PaintingConst.PLAYER_SIDE_LENGTH,
-                fill='blue',
-                outline='blue')
-
-    _gameObjectsPainter: GameObjectsPainter
-    _render_is_done: Event = Event()
-    _render_is_done.set()
 
     def render(self):
         """Called by GameEngine when game field render is needed"""
