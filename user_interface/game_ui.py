@@ -22,7 +22,6 @@ class EventListener:
         pass
 
 
-# TODO: Add here launcher GUI?
 class GameGUI(Canvas):
     _widgets_root = tk_Tk()
 

@@ -5,7 +5,7 @@ from threading import Thread
 from typing import Set, List
 
 from maps.maps_processor import GameMap
-from engine.gui import GameGUI, EventListener
+from user_interface.game_ui import GameGUI, EventListener
 from engine.game_objects import *
 from engine.collisions_processor import (
     CollisionsProcessor, Collision, GameEvent)
@@ -220,7 +220,7 @@ class GameEngine(EventListener):
             / 1000)
 
     def _game_loop(self):  # pragma: no cover
-        # Game loop is in a daemon thread so it will proceed until gui thread
+        # Game loop is in a daemon thread so it will proceed until user_interface thread
         # is closed
         while True:
             self._map_updater.update_map()
