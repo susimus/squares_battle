@@ -1,8 +1,10 @@
 from typing import Dict, Callable, List, TypeVar, Optional
 from enum import Enum
+from dataclasses import dataclass
 
 from maps.maps_processor import GameMap
-from engine.game_objects import *
+from engine.game_objects import (
+    MovableObject, GameObject, Vector2D, PaintingConst, Player)
 
 
 class GameEvent(Enum):
@@ -15,8 +17,7 @@ class GameEvent(Enum):
 
 @dataclass
 class Collision:
-    """Collision abstraction for CollisionsProcessor"""
-    moving_object: GameObject
+    moving_object: MovableObject
     game_event: GameEvent
 
     # May be 'None'. For example, if game object is out of game field's borders
@@ -24,26 +25,24 @@ class Collision:
 
 
 class CollisionsProcessor:
-    """Realises collision model in the game"""
+    _game_map: GameMap
+
+    MovableObject = TypeVar('MovableObject', covariant=True)
+    NarrowPhaseFunc = Callable[
+        [MovableObject,  # Moving object
+         Vector2D,  # Moving vector
+         List[GameObject]  # Possibly collided objects
+         ],
+        List[Collision]]
+
+    _narrow_check_switch: Dict[str, NarrowPhaseFunc]
 
     def __init__(self, input_map: GameMap):
         self._game_map = input_map
 
         # Add narrow check functions into switch here
         self._narrow_check_switch = {
-            "Player": self._check_player_collisions
-        }
-
-    _game_map: GameMap
-
-    GameObject = TypeVar('GameObject', covariant=True)
-    NarrowPhaseFunc = Callable[
-        [GameObject,  # Moving object
-         Vector2D,  # Moving vector
-         List[GameObject]  # Possibly collided objects
-         ],
-        List[Collision]]
-    _narrow_check_switch: Dict[str, NarrowPhaseFunc]
+            "Player": self._check_player_collisions}
 
     def get_collisions(
             self,
@@ -74,25 +73,36 @@ class CollisionsProcessor:
             player: Player,
             moving_vector: Vector2D,
             possibly_collided_objects: List[GameObject]) -> List[Collision]:
-        """All Player collisions checks are here"""
         result_collisions: List[Collision] = []
 
-        # Game borders collisions check
-        if (player.current_position.x + PaintingConst.PLAYER_SIDE_LENGTH
-                + moving_vector.x > self._game_map.game_field_size.x):
-            result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_RIGHT, None))
-        elif player.current_position.x + moving_vector.x < 0:
-            result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_LEFT, None))
-        if (player.current_position.y + PaintingConst.PLAYER_SIDE_LENGTH
-                + moving_vector.y > self._game_map.game_field_size.y):
-            result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_BOTTOM, None))
-        elif player.current_position.y + moving_vector.y < 0:
-            result_collisions.append(
-                Collision(player, GameEvent.PLAYER_IS_OUT_TOP, None))
+        self._check_player_with_borders_collisions(
+            player, moving_vector, result_collisions)
 
         # TODO: Other collisions check
 
         return result_collisions
+
+    def _check_player_with_borders_collisions(
+            self,
+            player: Player,
+            moving_vector: Vector2D,
+            result_collisions: List[Collision]):
+        # Horizontal
+        if (player.current_position.x + PaintingConst.PLAYER_SIDE_LENGTH
+                + moving_vector.x > self._game_map.game_field_size.x):
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_RIGHT, None))
+
+        elif player.current_position.x + moving_vector.x < 0:
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_LEFT, None))
+
+        # Vertical
+        if (player.current_position.y + PaintingConst.PLAYER_SIDE_LENGTH
+                + moving_vector.y > self._game_map.game_field_size.y):
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_BOTTOM, None))
+
+        elif player.current_position.y + moving_vector.y < 0:
+            result_collisions.append(
+                Collision(player, GameEvent.PLAYER_IS_OUT_TOP, None))
