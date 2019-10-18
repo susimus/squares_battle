@@ -10,10 +10,6 @@ from engine.game_objects import (
 from engine import ApplicationException
 
 
-class MapsProcessorException(ApplicationException):
-    pass
-
-
 class GameMap:
     """
 
@@ -61,3 +57,7 @@ class RawMapsContainer:
             Vector2D(1200, 700),
             [BasicPlatform(Vector2D(0, 0), 100, 100)],
             [Player(Vector2D(101, 101))])
+
+
+class MapsProcessorException(ApplicationException):
+    pass
