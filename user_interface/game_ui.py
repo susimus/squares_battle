@@ -6,7 +6,7 @@ from tkinter import (
 from threading import Event
 
 from maps.maps_processor import GameMap
-from engine.game_objects import PaintingConst
+from engine.game_objects import PaintingConst, Player
 
 
 class EventListener:
@@ -26,25 +26,37 @@ class GameGUI(Canvas):
     class GameObjectsPainter:
         """Accumulates all painting methods"""
         _rendering_map: GameMap
-        _gui: Canvas
+        _game_canvas: Canvas
 
         def __init__(self, input_gui: Canvas, input_map: GameMap):
-            self._gui = input_gui
+            self._game_canvas = input_gui
             self._rendering_map = input_map
 
         def paint_all_game_objects(self):
             """Accumulates all painting"""
-            self._gui.delete('all')
+            self._game_canvas.delete('all')
+            # WouldBeBetter: Paint interface objects
 
-            self._paint_player()
+            self._paint_immovable_objects()
 
-        def _paint_player(self):
-            self._gui.create_rectangle(
-                self._rendering_map.player.current_position.x,
-                self._rendering_map.player.current_position.y,
-                self._rendering_map.player.current_position.x
+            self._paint_movable_objects()
+
+        def _paint_immovable_objects(self):
+            for immovable_object in self._rendering_map.immovable_objects:
+                pass
+
+        def _paint_movable_objects(self):
+            for movable_object in self._rendering_map.movable_objects:
+                if isinstance(movable_object, Player):
+                    self._paint_player(movable_object)
+
+        def _paint_player(self, player: Player):
+            self._game_canvas.create_rectangle(
+                player.current_position.x,
+                player.current_position.y,
+                player.current_position.x
                 + PaintingConst.PLAYER_SIDE_LENGTH,
-                self._rendering_map.player.current_position.y
+                player.current_position.y
                 + PaintingConst.PLAYER_SIDE_LENGTH,
                 fill='blue',
                 outline='blue')
@@ -65,8 +77,6 @@ class GameGUI(Canvas):
             self,
             input_map: GameMap,
             input_engine_as_event_listener: EventListener):
-        self._widgets_root = tk_Tk()
-
         self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
 
         self._render_is_done = Event()
