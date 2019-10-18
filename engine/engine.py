@@ -45,12 +45,17 @@ class GameEngine(EventListener):
                 self._jump_is_available = False
                 self._vertical_velocity = 0
 
+            def update_movable_objects_states(self):
+                for movable_object in self._game_map.movable_objects:
+                    if isinstance(movable_object, Player):
+                        self._update_player_state(movable_object)
+
             # WouldBeBetter: Change vertical velocity to 0 when
             #  PLAYER_IS_OUT_BOTTOM is gotten
-            def update_player_state(self):  # pragma: no cover
+            def _update_player_state(self, player: Player):  # pragma: no cover
                 # Copy in case if '_keys_pressed' will be modified during check
                 keys_pressed_copy: Set[int] = set(self._keys_pressed)
-                player_move_vector: Vector2D = Vector2D()
+                player_move_vector: Vector2D = Vector2D(0, 0)
 
                 player_move_vector.x += self._get_horizontal_velocity(
                     keys_pressed_copy)
@@ -60,12 +65,12 @@ class GameEngine(EventListener):
                 if player_move_vector.x != 0 or player_move_vector.y != 0:
                     player_collisions: List[Collision] = (
                         self._collisions_processor.get_collisions(
-                            self._game_map.player, player_move_vector))
+                            player, player_move_vector))
                     for collision in player_collisions:
                         if (collision.game_event
                                 is GameEvent.PLAYER_IS_OUT_RIGHT):
                             player_move_vector.x = 0
-                            self._game_map.player.current_position.x = (
+                            player.current_position.x = (
                                 self._game_map.game_field_size.x
                                 # '+ 1' for closest to border drawing
                                 - PaintingConst.PLAYER_SIDE_LENGTH + 1)
@@ -73,12 +78,12 @@ class GameEngine(EventListener):
                         elif (collision.game_event
                               is GameEvent.PLAYER_IS_OUT_LEFT):
                             player_move_vector.x = 0
-                            self._game_map.player.current_position.x = 0
+                            player.current_position.x = 0
 
                         elif (collision.game_event
                               is GameEvent.PLAYER_IS_OUT_BOTTOM):
                             player_move_vector.y = 0
-                            self._game_map.player.current_position.y = (
+                            player.current_position.y = (
                                 self._game_map.game_field_size.y
                                 # '+ 1' for closest to border drawing
                                 - PaintingConst.PLAYER_SIDE_LENGTH + 1)
@@ -88,20 +93,19 @@ class GameEngine(EventListener):
                         elif (collision.game_event
                               is GameEvent.PLAYER_IS_OUT_TOP):
                             player_move_vector.y = 0
-                            self._game_map.player.current_position.y = 0
+                            player.current_position.y = 0
 
                         else:
                             raise ValueError(
                                 "Got unknown [game_event]: "
                                 + collision.game_event.name)
 
-                    self._game_map.player.current_position += (
-                        player_move_vector)
+                    player.current_position += player_move_vector
 
             def _get_horizontal_velocity(
                     self, keys_pressed: Set[int]) -> float:
                 """Method gets player's current horizontal velocity"""
-                input_move_vector: Vector2D = Vector2D()
+                input_move_vector: Vector2D = Vector2D(0, 0)
 
                 if self._KEY_CODE_A in keys_pressed:
                     input_move_vector.x += -self._PLAYER_MOVE_SPEED
@@ -143,7 +147,12 @@ class GameEngine(EventListener):
             """Main update method that should be invoked from the game loop
 
             All update methods are here"""
-            self._state_updater.update_player_state()
+            # WouldBeBetter: Update interface objects states
+
+            # WouldBeBetter: Update immovable objects states. For example,
+            #  update state of immovable but rotating buff
+
+            self._state_updater.update_movable_objects_states()
 
     _map_updater: MapUpdater
 
@@ -220,7 +229,7 @@ class GameEngine(EventListener):
             / 1000)
 
     def _game_loop(self):  # pragma: no cover
-        # Game loop is in a daemon thread so it will proceed until user_
+        # Game loop is in a daemon thread so it will proceed until user
         # interface thread is closed
         while True:
             self._map_updater.update_map()
