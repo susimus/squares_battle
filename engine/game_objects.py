@@ -21,16 +21,20 @@ class GameObject:
     current_position: Vector2D
 
 
-# TODO: Implement [BasicProjectile]
-@dataclass
-class BasicProjectile(GameObject):
-    """Small projectile-sphere that just flies forward with average speed"""
-    # Always fired by some Player. Number specifies Player instance
-    fired_by_player: int
+class ImmovableObject(GameObject):
+    """Abstraction for exact rendering order
+
+    Rendering order:
+    1. Interface objects
+    2. Immovable objects
+    3. Movable objects
+    """
+    pass
 
 
 # TODO: Implement [BasicPlatform]
-class BasicPlatform(GameObject):
+@dataclass
+class BasicPlatform(ImmovableObject):
     """Rectangle on which Player can walk"""
     _width: int
     _height: int
@@ -42,13 +46,39 @@ class BasicPlatform(GameObject):
         return self._height
 
 
-# TODO: Implement [InterfaceObject]
-class InterfaceObject(GameObject):
+class MovableObject(GameObject):
+    """Abstraction for exact rendering order
+
+    Rendering order:
+    1. Interface objects
+    2. Immovable objects
+    3. Movable objects
+    """
     pass
 
 
 @dataclass
-class Player(GameObject):
+class Player(MovableObject):
+    pass
+
+
+# TODO: Implement [BasicProjectile]
+@dataclass
+class BasicProjectile(MovableObject):
+    """Small projectile-sphere that just flies forward with average speed"""
+    # Always fired by some Player. Number specifies Player instance
+    fired_by_player: int
+
+
+# TODO: Implement [InterfaceObject]
+class InterfaceObject(GameObject):
+    """Abstraction for exact rendering order
+
+        Rendering order:
+        1. Interface objects
+        2. Immovable objects
+        3. Movable objects
+        """
     pass
 
 
