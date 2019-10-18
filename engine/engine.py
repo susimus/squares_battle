@@ -9,6 +9,7 @@ from user_interface.game_ui import GameGUI, EventListener
 from engine.game_objects import *
 from engine.collisions_processor import (
     CollisionsProcessor, Collision, GameEvent)
+from engine import ApplicationException
 
 
 class GameEngine(EventListener):
@@ -49,6 +50,11 @@ class GameEngine(EventListener):
                 for movable_object in self._game_map.movable_objects:
                     if isinstance(movable_object, Player):
                         self._update_player_state(movable_object)
+                    else:
+                        GameEngineException(
+                            "While processing [update_movable_objects_states] "
+                            "method, got [movable_object] with unknown type: "
+                            + movable_object.__class__.__name__)
 
             # WouldBeBetter: Change vertical velocity to 0 when
             #  PLAYER_IS_OUT_BOTTOM is gotten
@@ -239,3 +245,7 @@ class GameEngine(EventListener):
             self._time_alignment()
 
             self._game_loop_iterations_count += 1
+
+
+class GameEngineException(ApplicationException):
+    pass
