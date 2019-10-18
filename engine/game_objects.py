@@ -2,23 +2,9 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Vector2D:
-    """Vector of two coordinates: X, Y
-
-    All positions or position modifiers in game should be vectors of two
-    coordinates
-    """
-    x: float
-    y: float
-
-    def __add__(self, other):
-        return Vector2D(self.x + other.x, self.y + other.y)
-
-
-@dataclass
 class GameObject:
     # Left top pixel position
-    current_position: Vector2D
+    current_position: 'Vector2D'
 
 
 class ImmovableObject(GameObject):
@@ -79,6 +65,20 @@ class InterfaceObject(GameObject):
     3. Movable objects
     """
     pass
+
+
+@dataclass
+class Vector2D:
+    """Vector of two coordinates: X, Y
+
+    All positions or position modifiers in game should be vectors of two
+    coordinates
+    """
+    x: float
+    y: float
+
+    def __add__(self, other):
+        return Vector2D(self.x + other.x, self.y + other.y)
 
 
 class PaintingConst:
