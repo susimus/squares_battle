@@ -7,19 +7,7 @@ from threading import Event
 
 from maps.maps_processor import GameMap
 from engine.game_objects import PaintingConst, Player
-
-
-class EventListener:
-    """Interface for circular imports problem resolving.
-
-    It is impossible to have GameEngine import here and GUI import in
-    'engine.py' at the same time so GameEngine have this interface.
-    """
-    def key_released(self, key_code: int):
-        pass
-
-    def key_pressed(self, key_code: int):
-        pass
+from engine import ApplicationException
 
 
 class GameGUI(Canvas):
@@ -43,12 +31,20 @@ class GameGUI(Canvas):
 
         def _paint_immovable_objects(self):
             for immovable_object in self._rendering_map.immovable_objects:
-                pass
+                GameUIException(
+                    "While processing [_paint_immovable_objects] method, "
+                    "got [immovable_object] with unknown type: "
+                    + immovable_object.__class__.__name__)
 
         def _paint_movable_objects(self):
             for movable_object in self._rendering_map.movable_objects:
                 if isinstance(movable_object, Player):
                     self._paint_player(movable_object)
+                else:
+                    GameUIException(
+                        "While processing [_paint_movable_objects] method, "
+                        "got [movable_object] with unknown type: "
+                        + movable_object.__class__.__name__)
 
         def _paint_player(self, player: Player):
             self._game_canvas.create_rectangle(
@@ -76,7 +72,7 @@ class GameGUI(Canvas):
     def init(
             self,
             input_map: GameMap,
-            input_engine_as_event_listener: EventListener):
+            input_engine_as_event_listener: 'EventListener'):
         self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
 
         self._render_is_done = Event()
@@ -111,7 +107,7 @@ class GameGUI(Canvas):
 
         self.grid(sticky=TK_NSEW)
 
-    def _setup_bindings(self, engine_as_event_listener: EventListener):
+    def _setup_bindings(self, engine_as_event_listener: 'EventListener'):
         """Player's firing and moving bindings"""
         # TODO: Mouse bindings
 
@@ -140,3 +136,20 @@ class GameGUI(Canvas):
     @staticmethod
     def run_gui_loop():
         tk_mainloop()
+
+
+class EventListener:
+    """Interface for circular imports problem resolving.
+
+    It is impossible to have GameEngine import here and GUI import in
+    'engine.py' at the same time so GameEngine have this interface.
+    """
+    def key_released(self, key_code: int):
+        pass
+
+    def key_pressed(self, key_code: int):
+        pass
+
+
+class GameUIException(ApplicationException):
+    pass
