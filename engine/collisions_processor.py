@@ -133,7 +133,7 @@ class CollisionsProcessor:
                 and player_new_bottom_border >= buff.location.y
                 and player_new_top_border
                 <= buff.location.y + PaintingConst.BUFF_SIDE_LENGTH
-                and not buff.buff_is_charging):
+                and not buff.is_charging()):
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BUFF, buff))
 
