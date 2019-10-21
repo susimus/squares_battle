@@ -4,9 +4,10 @@ from copy import deepcopy
 from engine.game_objects import (
     Player,
     Vector2D,
-    BasicPlatform,
     ImmovableObject,
-    MovableObject)
+    MovableObject,
+    SpeedUpBuff,
+    JumpHeightUpBuff)
 from engine import ApplicationException
 
 
@@ -45,18 +46,28 @@ class RawMapsContainer:
     """Contains maps initializations via code"""
     @staticmethod
     def get_map_1() -> GameMap:
+        """One player only"""
         return GameMap(
             Vector2D(1200, 700),
             [],
             [Player(Vector2D(10, 10))])
 
-    # TODO: Implement [get_map2]
     @staticmethod
-    def get_map2() -> GameMap:
+    def get_map_2() -> GameMap:
+        """Player with single platform"""
         return GameMap(
             Vector2D(1200, 700),
-            [BasicPlatform(Vector2D(0, 0), 100, 100)],
+            [],  # BasicPlatform(Vector2D(500, 600), 200, 30)],
             [Player(Vector2D(101, 101))])
+
+    @staticmethod
+    def get_map_3() -> GameMap:
+        """Player with two buffs"""
+        return GameMap(
+            Vector2D(1200, 700),
+            [SpeedUpBuff(Vector2D(500, 500)),
+             JumpHeightUpBuff(Vector2D(1000, 500))],
+            [Player(Vector2D(0, 0))])
 
 
 class MapsProcessorException(ApplicationException):
