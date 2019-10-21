@@ -22,9 +22,13 @@ class ImmovableObject(GameObject):
 @dataclass
 class AbstractBuff(ImmovableObject):
     # Time in game loop iterations
-    recharge_time: int = dataclass_field(default=100)
+    _recharge_time: int = dataclass_field(default=100)
+
     buff_is_charging: bool = dataclass_field(default=False)
     charge_time_passed: int = dataclass_field(default=0)
+
+    def get_recharge_time(self):
+        return self._recharge_time
 
 
 class SpeedUpBuff(AbstractBuff):
@@ -100,4 +104,8 @@ class Vector2D:
 
 class PaintingConst:
     # Player is a square
-    PLAYER_SIDE_LENGTH = 45
+    PLAYER_SIDE_LENGTH: int = 45
+
+    # Optimization: Exact length
+    # Buffs are squares
+    BUFF_SIDE_LENGTH: int = 20
