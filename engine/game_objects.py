@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field as dataclass_field
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -26,6 +26,7 @@ class AbstractBuff(ImmovableObject):
 
     buff_is_charging: bool = dataclass_field(default=False)
     charge_time_start: int = dataclass_field(default=0)
+    player_captor: Optional['Player'] = dataclass_field(default=None)
 
     def get_recharge_time(self):
         return self._recharge_time
