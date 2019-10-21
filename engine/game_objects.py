@@ -24,12 +24,30 @@ class AbstractBuff(ImmovableObject):
     # Time in game loop iterations
     _recharge_time: int = dataclass_field(default=100)
 
-    buff_is_charging: bool = dataclass_field(default=False)
-    charge_time_start: int = dataclass_field(default=0)
-    player_captor: Optional['Player'] = dataclass_field(default=None)
+    _is_charging: bool = dataclass_field(default=False)
+    _charge_time_start: int = dataclass_field(default=0)
+    _player_captor: Optional['Player'] = dataclass_field(default=None)
 
-    def get_recharge_time(self):
-        return self._recharge_time
+    def capture_this_buff(
+            self,
+            charge_time_start: int,
+            player_captor: 'Player'):
+        self._is_charging = True
+        self._charge_time_start = charge_time_start
+        self._player_captor = player_captor
+
+        self._player_captor.current_buffs.append(self)
+
+    def check_buff_expiration(self, current_time: int):
+        if (self._is_charging
+                and current_time - self._charge_time_start
+                >= self._recharge_time):
+            self._player_captor.current_buffs.remove(self)
+
+            self._is_charging = False
+
+    def is_charging(self):
+        return self._is_charging
 
 
 class SpeedUpBuff(AbstractBuff):
