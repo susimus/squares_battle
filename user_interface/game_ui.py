@@ -6,7 +6,8 @@ from tkinter import (
 from threading import Event
 
 from maps.maps_processor import GameMap
-from engine.game_objects import PaintingConst, Player
+from engine.game_objects import (
+    PaintingConst, Player, SpeedUpBuff, JumpHeightUpBuff)
 from engine import ApplicationException
 
 
@@ -31,15 +32,55 @@ class GameGUI(Canvas):
 
         def _paint_immovable_objects(self):
             for immovable_object in self._rendering_map.immovable_objects:
-                GameUIException(
-                    "While processing [_paint_immovable_objects] method, "
-                    "got [immovable_object] with unknown type: "
-                    + immovable_object.__class__.__name__)
+                if isinstance(immovable_object, SpeedUpBuff):
+                    self._paint_speed_up_buff(immovable_object)
+
+                elif isinstance(immovable_object, JumpHeightUpBuff):
+                    self._paint_jump_height_up_buff(immovable_object)
+
+                # elif isinstance(immovable_object, BasicPlatform):
+                #     self._paint_basic_platform(immovable_object)
+
+                else:
+                    GameUIException(
+                        "While processing [_paint_immovable_objects] method, "
+                        "got [immovable_object] with unknown type: "
+                        + immovable_object.__class__.__name__)
+
+        def _paint_speed_up_buff(self, speed_buff: SpeedUpBuff):
+            self._game_canvas.create_rectangle(
+                speed_buff.location.x,
+                speed_buff.location.y,
+                speed_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
+                speed_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
+                fill='green',
+                outline='green')
+
+        def _paint_jump_height_up_buff(self, jump_buff: JumpHeightUpBuff):
+            self._game_canvas.create_rectangle(
+                jump_buff.location.x,
+                jump_buff.location.y,
+                jump_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
+                jump_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
+                fill='yellow',
+                outline='yellow')
+
+        # def _paint_basic_platform(self, basic_platform: BasicPlatform):
+        #     self._game_canvas.create_rectangle(
+        #         basic_platform.location.x,
+        #         basic_platform.location.y,
+        #         basic_platform.location.x
+        #         + basic_platform.get_width(),
+        #         basic_platform.location.y
+        #         + basic_platform.get_height(),
+        #         fill='brown',
+        #         outline='brown')
 
         def _paint_movable_objects(self):
             for movable_object in self._rendering_map.movable_objects:
                 if isinstance(movable_object, Player):
                     self._paint_player(movable_object)
+
                 else:
                     GameUIException(
                         "While processing [_paint_movable_objects] method, "
@@ -48,11 +89,11 @@ class GameGUI(Canvas):
 
         def _paint_player(self, player: Player):
             self._game_canvas.create_rectangle(
-                player.current_position.x,
-                player.current_position.y,
-                player.current_position.x
+                player.location.x,
+                player.location.y,
+                player.location.x
                 + PaintingConst.PLAYER_SIDE_LENGTH,
-                player.current_position.y
+                player.location.y
                 + PaintingConst.PLAYER_SIDE_LENGTH,
                 fill='blue',
                 outline='blue')
