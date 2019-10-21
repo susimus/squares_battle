@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field as dataclass_field
+from typing import List
 
 
 @dataclass
@@ -23,7 +24,7 @@ class AbstractBuff(ImmovableObject):
     # Time in game loop iterations
     recharge_time: int = dataclass_field(default=100)
     buff_is_charging: bool = dataclass_field(default=False)
-    recharging_time_passed: int = dataclass_field(default=0)
+    charge_time_passed: int = dataclass_field(default=0)
 
 
 class SpeedUpBuff(AbstractBuff):
@@ -61,7 +62,7 @@ class MovableObject(GameObject):
 
 @dataclass
 class Player(MovableObject):
-    pass
+    current_buffs: List[AbstractBuff] = dataclass_field(default_factory=list)
 
 
 # TODO: Implement [BasicProjectile]
