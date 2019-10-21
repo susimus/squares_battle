@@ -68,5 +68,5 @@ def run_launcher_logic():
     parser.parse_args()
 
     # TODO: make GUI version of launcher. For now launcher just loads some map
-    game_engine = GameEngine(RawMapsContainer.get_map_1())
+    game_engine = GameEngine(RawMapsContainer.get_map_3())
     game_engine.start_game()
