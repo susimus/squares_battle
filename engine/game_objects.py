@@ -25,7 +25,7 @@ class AbstractBuff(ImmovableObject):
     _recharge_time: int = dataclass_field(default=100)
 
     buff_is_charging: bool = dataclass_field(default=False)
-    charge_time_passed: int = dataclass_field(default=0)
+    charge_time_start: int = dataclass_field(default=0)
 
     def get_recharge_time(self):
         return self._recharge_time
