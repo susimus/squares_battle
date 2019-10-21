@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field as dataclass_field
 
 
 @dataclass
 class GameObject:
     # Left top pixel position
-    current_position: 'Vector2D'
+    location: 'Vector2D'
 
 
 class ImmovableObject(GameObject):
@@ -18,18 +18,34 @@ class ImmovableObject(GameObject):
     pass
 
 
-# TODO: Implement [BasicPlatform]
 @dataclass
-class BasicPlatform(ImmovableObject):
-    """Rectangle on which Player can walk"""
-    _width: int
-    _height: int
+class AbstractBuff(ImmovableObject):
+    # Time in game loop iterations
+    recharge_time: int = dataclass_field(default=100)
+    buff_is_charging: bool = dataclass_field(default=False)
+    recharging_time_passed: int = dataclass_field(default=0)
 
-    def get_width(self) -> int:
-        return self._width
 
-    def get_height(self) -> int:
-        return self._height
+class SpeedUpBuff(AbstractBuff):
+    """Increase move speed of Player"""
+    pass
+
+
+class JumpHeightUpBuff(AbstractBuff):
+    pass
+
+# TODO: Implement [BasicPlatform]
+# @dataclass
+# class BasicPlatform(ImmovableObject):
+#     """Rectangle on which Player can walk"""
+#     _width: int
+#     _height: int
+#
+#     def get_width(self) -> int:
+#         return self._width
+#
+#     def get_height(self) -> int:
+#         return self._height
 
 
 class MovableObject(GameObject):
