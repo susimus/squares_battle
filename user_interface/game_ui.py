@@ -48,22 +48,24 @@ class GameGUI(Canvas):
                         + immovable_object.__class__.__name__)
 
         def _paint_speed_up_buff(self, speed_buff: SpeedUpBuff):
-            self._game_canvas.create_rectangle(
-                speed_buff.location.x,
-                speed_buff.location.y,
-                speed_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
-                speed_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
-                fill='green',
-                outline='green')
+            if not speed_buff.is_charging():
+                self._game_canvas.create_rectangle(
+                    speed_buff.location.x,
+                    speed_buff.location.y,
+                    speed_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
+                    speed_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
+                    fill='green',
+                    outline='green')
 
         def _paint_jump_height_up_buff(self, jump_buff: JumpHeightUpBuff):
-            self._game_canvas.create_rectangle(
-                jump_buff.location.x,
-                jump_buff.location.y,
-                jump_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
-                jump_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
-                fill='yellow',
-                outline='yellow')
+            if not jump_buff.is_charging():
+                self._game_canvas.create_rectangle(
+                    jump_buff.location.x,
+                    jump_buff.location.y,
+                    jump_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
+                    jump_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
+                    fill='yellow',
+                    outline='yellow')
 
         # def _paint_basic_platform(self, basic_platform: BasicPlatform):
         #     self._game_canvas.create_rectangle(
