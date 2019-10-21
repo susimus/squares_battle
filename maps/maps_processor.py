@@ -65,8 +65,8 @@ class RawMapsContainer:
         """Player with two buffs"""
         return GameMap(
             Vector2D(1200, 700),
-            [SpeedUpBuff(Vector2D(500, 500)),
-             JumpHeightUpBuff(Vector2D(1000, 500))],
+            [SpeedUpBuff(Vector2D(500, 550)),
+             JumpHeightUpBuff(Vector2D(1000, 550))],
             [Player(Vector2D(0, 0))])
 
 

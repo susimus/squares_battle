@@ -106,6 +106,5 @@ class PaintingConst:
     # Player is a square
     PLAYER_SIDE_LENGTH: int = 45
 
-    # Optimization: Exact length
     # Buffs are squares
-    BUFF_SIDE_LENGTH: int = 20
+    BUFF_SIDE_LENGTH: int = 25
