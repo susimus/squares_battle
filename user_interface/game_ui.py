@@ -6,8 +6,7 @@ from tkinter import (
 from threading import Event
 
 from maps.maps_processor import GameMap
-from engine.game_objects import (
-    PaintingConst, Player, SpeedUpBuff, JumpHeightUpBuff)
+from engine.game_objects import *
 from engine import ApplicationException
 
 
@@ -38,8 +37,8 @@ class GameGUI(Canvas):
                 elif isinstance(immovable_object, JumpHeightUpBuff):
                     self._paint_jump_height_up_buff(immovable_object)
 
-                # elif isinstance(immovable_object, BasicPlatform):
-                #     self._paint_basic_platform(immovable_object)
+                elif isinstance(immovable_object, BasicPlatform):
+                    self._paint_basic_platform(immovable_object)
 
                 else:
                     GameUIException(
@@ -67,16 +66,16 @@ class GameGUI(Canvas):
                     fill='yellow',
                     outline='yellow')
 
-        # def _paint_basic_platform(self, basic_platform: BasicPlatform):
-        #     self._game_canvas.create_rectangle(
-        #         basic_platform.location.x,
-        #         basic_platform.location.y,
-        #         basic_platform.location.x
-        #         + basic_platform.get_width(),
-        #         basic_platform.location.y
-        #         + basic_platform.get_height(),
-        #         fill='brown',
-        #         outline='brown')
+        def _paint_basic_platform(self, basic_platform: BasicPlatform):
+            self._game_canvas.create_rectangle(
+                basic_platform.location.x,
+                basic_platform.location.y,
+                basic_platform.location.x
+                + basic_platform.get_width(),
+                basic_platform.location.y
+                + basic_platform.get_height(),
+                fill='brown',
+                outline='brown')
 
         def _paint_movable_objects(self):
             for movable_object in self._rendering_map.movable_objects:
