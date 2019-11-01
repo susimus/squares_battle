@@ -71,9 +71,9 @@ class GameGUI(Canvas):
                 basic_platform.location.x,
                 basic_platform.location.y,
                 basic_platform.location.x
-                + basic_platform.get_width(),
+                + basic_platform.width,
                 basic_platform.location.y
-                + basic_platform.get_height(),
+                + basic_platform.height,
                 fill='brown',
                 outline='brown')
 
