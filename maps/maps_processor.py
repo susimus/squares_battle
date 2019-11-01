@@ -1,13 +1,6 @@
-from typing import List
 from copy import deepcopy
 
-from engine.game_objects import (
-    Player,
-    Vector2D,
-    ImmovableObject,
-    MovableObject,
-    SpeedUpBuff,
-    JumpHeightUpBuff)
+from engine.game_objects import *
 from engine import ApplicationException
 
 
@@ -57,7 +50,7 @@ class RawMapsContainer:
         """Player with single platform"""
         return GameMap(
             Vector2D(1200, 700),
-            [],  # BasicPlatform(Vector2D(500, 600), 200, 30)],
+            [BasicPlatform(Vector2D(500, 600), 200, 30)],
             [Player(Vector2D(101, 101))])
 
     @staticmethod
