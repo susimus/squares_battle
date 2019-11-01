@@ -2,28 +2,28 @@ from time import (
     time as current_time_in_seconds,
     sleep as time_sleep)
 from threading import Thread
-from typing import Set, List, Callable
+from typing import Set, Callable
 
 from maps.maps_processor import GameMap
 from user_interface.game_ui import GameGUI, EventListener
-from engine.game_objects import (
-    Vector2D,
-    Player,
-    PaintingConst,
-    AbstractBuff,
-    SpeedUpBuff,
-    JumpHeightUpBuff)
+from engine.game_objects import *
 from engine.collisions_processor import (
     CollisionsProcessor, Collision, GameEvent)
 from engine import ApplicationException
 
 
 class GameEngine(EventListener):
-    """All game logic processes here"""
+    """All game logic processes here
+    """
     class MapUpdater:
-        """All map state updating logic is here"""
+        """All map state updating logic is here
+        """
         class StateUpdater:
-            """All game objects state updating is here"""
+            """All game objects state updating is here
+
+            NOW there is only one main instance of [Player] that can move
+            and do stuff
+            """
             _KEY_CODE_A: int = 65
             _KEY_CODE_D: int = 68
             _KEY_CODE_SPACE: int = 32
@@ -44,6 +44,9 @@ class GameEngine(EventListener):
             _game_map: GameMap
             _keys_pressed: Set[int]
 
+            # If so then main [Player] can jump
+            # Optimization: When main [Player] is on the ground then no
+            #  collisions with the ground should be initiated
             _player_is_on_the_ground: bool
 
             _vertical_velocity: float
@@ -98,79 +101,112 @@ class GameEngine(EventListener):
                         self._collisions_processor.get_collisions(
                             player, player_move_vector))
 
-                    # Optimization: Delegate this switch to a method?
                     for collision in player_collisions:
-                        if (collision.game_event
-                                is GameEvent.PLAYER_BORDERS_RIGHT):
-                            player_move_vector.x = 0
-                            player.location.x = (
-                                self._game_map.game_field_size.x
-                                # '+ 1' for closest to border drawing
-                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
-
-                        elif (collision.game_event
-                              is GameEvent.PLAYER_BORDERS_LEFT):
-                            player_move_vector.x = 0
-                            player.location.x = 0
-
-                        elif (collision.game_event
-                              is GameEvent.PLAYER_GROUND):
-                            player_move_vector.y = 0
-
-                            if collision.collided_object is None:
-                                # Teleport Player close to game borders
-                                player.location.y = (
-                                    self._game_map.game_field_size.y
-                                    - PaintingConst.PLAYER_SIDE_LENGTH + 1)
-
-                            # elif isinstance(
-                            #         collision.collided_object,
-                            #         BasicPlatform):
-                            #     player.location.y = (
-                            #         collision.collided_object.location.y
-                            #         - PaintingConst.PLAYER_SIDE_LENGTH)
-
-                            else:
-                                GameEngineException(
-                                    "[_update_player_state] method got "
-                                    "[collision] with [PLAYER_GROUND] as "
-                                    "[game_event] and unknown object as "
-                                    "[collided_object]: "
-                                    + collision
-                                    .collided_object.__class__.__name__)
-
-                            self._player_is_on_the_ground = True
-
-                        elif (collision.game_event
-                              is GameEvent.PLAYER_BORDERS_TOP):
-                            player_move_vector.y = 0
-                            player.location.y = 0
-
-                        elif (collision.game_event
-                              is GameEvent.PLAYER_BUFF):
-                            if not isinstance(
-                                    collision.collided_object, AbstractBuff):
-                                raise GameEngineException(
-                                    "[_update_player_state] got [PLAYER_BUFF]"
-                                    "as [game_event] and not [AbstractBuff]"
-                                    "instance as [collided_object]: "
-                                    + collision
-                                    .collided_object.__class__.__name__)
-
-                            collision.collided_object.capture_this_buff(
-                                self._get_game_loop_iterations_count(),
-                                player)
-
-                        else:
-                            raise GameEngineException(
-                                "While processing [_update_player_state] "
-                                "method, got unknown [game_event]: "
-                                + collision.game_event.name)
+                        self._process_player_collision(
+                            player, collision, player_move_vector)
 
                     if player_move_vector.y != 0:
                         self._player_is_on_the_ground = False
 
                     player.location += player_move_vector
+
+            def _process_player_collision(
+                    self,
+                    player: Player,
+                    collision: Collision,
+                    player_move_vector: Vector2D):
+                if collision.collided_object is None:
+                    if (collision.game_event
+                            is GameEvent.PLAYER_BORDERS_RIGHT):
+                        player_move_vector.x = 0
+                        player.location.x = (
+                                self._game_map.game_field_size.x
+                                # '+ 1' for closest to border drawing
+                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+
+                    elif (collision.game_event
+                          is GameEvent.PLAYER_BORDERS_LEFT):
+                        player_move_vector.x = 0
+                        player.location.x = 0
+
+                    elif (collision.game_event
+                          is GameEvent.PLAYER_BORDERS_BOTTOM):
+                        player_move_vector.y = 0
+
+                        # Teleport Player close to game borders
+                        player.location.y = (
+                                self._game_map.game_field_size.y
+                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+
+                        self._player_is_on_the_ground = True
+
+                    elif (collision.game_event
+                          is GameEvent.PLAYER_BORDERS_TOP):
+                        player_move_vector.y = 0
+                        player.location.y = 0
+
+                    else:
+                        raise PlayerCollisionsSwitchError(
+                            '[collided_object] is [None], [game_event] is '
+                            'unknown',
+                            collision.game_event.name)
+
+                elif isinstance(collision.collided_object, AbstractBuff):
+                    if collision.game_event is GameEvent.PLAYER_BUFF:
+                        collision.collided_object.capture_this_buff(
+                            self._get_game_loop_iterations_count(),
+                            player)
+                    else:
+                        raise PlayerCollisionsSwitchError(
+                            '[collided_object] is instance of [AbstractBuff], '
+                            '[game_event] is unknown',
+                            collision.game_event.name)
+
+                elif isinstance(collision.collided_object, BasicPlatform):
+                    if (collision.game_event
+                            is GameEvent.PLAYER_TOP_BASIC_PLATFORM):
+                        player_move_vector.y = 0
+
+                        player.location.y = (
+                                collision.collided_object.location.y
+                                + collision.collided_object.height + 1)
+
+                    elif (collision.game_event
+                            is GameEvent.PLAYER_BOTTOM_BASIC_PLATFORM):
+                        player_move_vector.y = 0
+
+                        player.location.y = (
+                                collision.collided_object.location.y
+                                - PaintingConst.PLAYER_SIDE_LENGTH - 1)
+
+                        self._player_is_on_the_ground = True
+
+                    elif (collision.game_event
+                            is GameEvent.PLAYER_RIGHT_BASIC_PLATFORM):
+                        player_move_vector.x = 0
+
+                        player.location.x = (
+                                collision.collided_object.location.x
+                                - PaintingConst.PLAYER_SIDE_LENGTH - 1)
+
+                    elif (collision.game_event
+                            is GameEvent.PLAYER_LEFT_BASIC_PLATFORM):
+                        player_move_vector.x = 0
+
+                        player.location.x = (
+                                collision.collided_object.location.x
+                                + collision.collided_object.width + 1)
+
+                    else:
+                        raise PlayerCollisionsSwitchError(
+                            '[collided_object] is instance of [BasicPlatform],'
+                            '[game_event] is unknown',
+                            collision.game_event.name)
+
+                else:
+                    raise PlayerCollisionsSwitchError(
+                        "[collided_object] is unknown",
+                        collision.collided_object.__class__.__name__)
 
             def _check_player_buffs(self, player: Player):
                 for buff in player.current_buffs:
@@ -200,7 +236,6 @@ class GameEngine(EventListener):
 
                 return input_move_vector.x
 
-            # TODO: Vertical velocity for specific player due to personal buffs
             def _get_vertical_velocity(self, keys_pressed: Set[int]) -> float:
                 """Method calculates current player's vertical velocity"""
                 if (
@@ -350,4 +385,8 @@ class GameEngine(EventListener):
 
 
 class GameEngineException(ApplicationException):
+    pass
+
+
+class PlayerCollisionsSwitchError(GameEngineException):
     pass
