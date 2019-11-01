@@ -65,10 +65,12 @@ class BasicPlatform(ImmovableObject):
     _width: int
     _height: int
 
-    def get_width(self) -> int:
+    @property
+    def width(self) -> int:
         return self._width
 
-    def get_height(self) -> int:
+    @property
+    def height(self) -> int:
         return self._height
 
 
