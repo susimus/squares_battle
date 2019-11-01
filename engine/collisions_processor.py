@@ -1,17 +1,9 @@
-from typing import List, Optional, TypeVar, Union
+from typing import TypeVar, Union
 from enum import Enum
-from dataclasses import dataclass
 from itertools import chain as itertools_chain
 
 from maps.maps_processor import GameMap
-from engine.game_objects import (
-    MovableObject,
-    GameObject,
-    Vector2D,
-    PaintingConst,
-    Player,
-    ImmovableObject,
-    AbstractBuff)
+from engine.game_objects import *
 from engine import ApplicationException
 
 
@@ -77,9 +69,9 @@ class CollisionsProcessor:
                 self._check_player_with_buff_collisions(
                     player, moving_vector, game_object)
 
-            # elif isinstance(game_object, BasicPlatform):
-            #     self._check_player_with_basic_platform_collisions(
-            #         player, moving_vector, game_object)
+            elif isinstance(game_object, BasicPlatform):
+                self._check_player_with_basic_platform_collisions(
+                    player, moving_vector, game_object)
 
             else:
                 raise CollisionsProcessorException(
@@ -105,7 +97,7 @@ class CollisionsProcessor:
         if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
                 + moving_vector.y > self._game_map.game_field_size.y):
             self._result_collisions.append(
-                Collision(player, GameEvent.PLAYER_GROUND, None))
+                Collision(player, GameEvent.PLAYER_BORDERS_BOTTOM, None))
 
         elif player.location.y + moving_vector.y < 0:
             self._result_collisions.append(
@@ -137,25 +129,69 @@ class CollisionsProcessor:
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BUFF, buff))
 
-    # TODO: Implement [_check_player_with_basic_platform_collisions]
-    # def _check_player_with_basic_platform_collisions(
-    #         self,
-    #         player: Player,
-    #         moving_vector: Vector2D,
-    #         basic_platform: BasicPlatform):
-    #     if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
-    #             < basic_platform.location.y
-    #             <= player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
-    #             + moving_vector.y
-    #             and player.location.x + PaintingConst.PLAYER_SIDE_LENGTH
-    #             >= basic_platform.location.x
-    #             and player.location.x
-    #             <= basic_platform.location.x + basic_platform.get_width()):
-    #         self._result_collisions.append(
-    #             Collision(player, GameEvent.PLAYER_GROUND, basic_platform))
+    def _check_player_with_basic_platform_collisions(
+            self,
+            player: Player,
+            moving_vector: Vector2D,
+            basic_platform: BasicPlatform):
+        player_new_left_border: float = player.location.x + moving_vector.x
+        player_new_right_border: float = (
+                player.location.x
+                + PaintingConst.PLAYER_SIDE_LENGTH
+                + moving_vector.x)
+        player_new_top_border: float = player.location.y + moving_vector.y
+        player_new_bottom_border: float = (
+                player.location.y
+                + PaintingConst.PLAYER_SIDE_LENGTH
+                + moving_vector.y)
+
+        if (player_new_right_border >= basic_platform.location.x
+                and player_new_left_border
+                <= basic_platform.location.x + basic_platform.get_width()
+                and player_new_bottom_border >= basic_platform.location.y
+                and player_new_top_border
+                <= basic_platform.location.y + basic_platform.get_height()):
+            if (basic_platform.location.y <= player_new_bottom_border
+                    <= basic_platform.location.y
+                    + basic_platform.get_height()):
+                self._result_collisions.append(
+                    Collision(
+                        player,
+                        GameEvent.PLAYER_BOTTOM_BASIC_PLATFORM,
+                        basic_platform))
+
+            elif (basic_platform.location.y <= player_new_top_border
+                    <= basic_platform.location.y
+                    + basic_platform.get_height()):
+                self._result_collisions.append(
+                    Collision(
+                        player,
+                        GameEvent.PLAYER_TOP_BASIC_PLATFORM,
+                        basic_platform))
+
+            elif (basic_platform.location.x <= player_new_right_border
+                    <= basic_platform.location.x
+                    + basic_platform.get_width()):
+                self._result_collisions.append(
+                    Collision(
+                        player,
+                        GameEvent.PLAYER_RIGHT_BASIC_PLATFORM,
+                        basic_platform))
+
+            elif (basic_platform.location.x <= player_new_left_border
+                    <= basic_platform.location.x
+                    + basic_platform.get_width()):
+                self._result_collisions.append(
+                    Collision(
+                        player,
+                        GameEvent.PLAYER_LEFT_BASIC_PLATFORM,
+                        basic_platform))
+            else:
+                raise CollisionsProcessorException(
+                    '[_check_player_with_basic_platform_collisions] '
+                    'reached unreachable code')
 
 
-@dataclass
 class Collision:
     moving_object: MovableObject
     game_event: 'GameEvent'
@@ -163,16 +199,33 @@ class Collision:
     # May be 'None'. For example, if game object is out of game field's borders
     collided_object: Optional[GameObject]
 
+    def __init__(
+            self,
+            input_moving_object: MovableObject,
+            input_game_event: 'GameEvent',
+            input_collided_object: Optional[GameObject]):
+        self.moving_object = input_moving_object
+        self.game_event = input_game_event
+        self.collided_object = input_collided_object
+
 
 class GameEvent(Enum):
     """Enumerates all collision events that can occur
+
+    Event name usually have form:
+    {OBJECT1}_{OBJECT2}_{OBJECT2_SIDE}
+    OR
+    {OBJECT1}_{OBJECT1_SIDE}_{OBJECT2}
     """
     PLAYER_BORDERS_RIGHT = object()
     PLAYER_BORDERS_LEFT = object()
     PLAYER_BORDERS_TOP = object()
+    PLAYER_BORDERS_BOTTOM = object()
 
-    # Player/borders_bottom OR Player/BasicPlatform
-    PLAYER_GROUND = object()
+    PLAYER_RIGHT_BASIC_PLATFORM = object()
+    PLAYER_LEFT_BASIC_PLATFORM = object()
+    PLAYER_TOP_BASIC_PLATFORM = object()
+    PLAYER_BOTTOM_BASIC_PLATFORM = object()
 
     PLAYER_BUFF = object()
 
