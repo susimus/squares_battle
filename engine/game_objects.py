@@ -22,7 +22,7 @@ class ImmovableObject(GameObject):
 @dataclass
 class AbstractBuff(ImmovableObject):
     # Time in game loop iterations
-    _recharge_time: int = dataclass_field(default=100)
+    _recharge_time: int = dataclass_field(default=200)
 
     _is_charging: bool = dataclass_field(default=False)
     _charge_time_start: int = dataclass_field(default=0)
@@ -58,18 +58,18 @@ class SpeedUpBuff(AbstractBuff):
 class JumpHeightUpBuff(AbstractBuff):
     pass
 
-# TODO: Implement [BasicPlatform]
-# @dataclass
-# class BasicPlatform(ImmovableObject):
-#     """Rectangle on which Player can walk"""
-#     _width: int
-#     _height: int
-#
-#     def get_width(self) -> int:
-#         return self._width
-#
-#     def get_height(self) -> int:
-#         return self._height
+
+@dataclass
+class BasicPlatform(ImmovableObject):
+    """Rectangle on which Player can walk"""
+    _width: int
+    _height: int
+
+    def get_width(self) -> int:
+        return self._width
+
+    def get_height(self) -> int:
+        return self._height
 
 
 class MovableObject(GameObject):
