@@ -147,13 +147,14 @@ class CollisionsProcessor:
 
         if (player_new_right_border >= basic_platform.location.x
                 and player_new_left_border
-                <= basic_platform.location.x + basic_platform.get_width()
+                <= basic_platform.location.x + basic_platform.width
                 and player_new_bottom_border >= basic_platform.location.y
                 and player_new_top_border
-                <= basic_platform.location.y + basic_platform.get_height()):
-            if (basic_platform.location.y <= player_new_bottom_border
-                    <= basic_platform.location.y
-                    + basic_platform.get_height()):
+                <= basic_platform.location.y + basic_platform.height):
+            if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
+                    < basic_platform.location.y
+                    <= player_new_bottom_border
+                    <= basic_platform.location.y + basic_platform.height):
                 self._result_collisions.append(
                     Collision(
                         player,
@@ -161,17 +162,18 @@ class CollisionsProcessor:
                         basic_platform))
 
             elif (basic_platform.location.y <= player_new_top_border
-                    <= basic_platform.location.y
-                    + basic_platform.get_height()):
+                    <= basic_platform.location.y + basic_platform.height
+                    < player.location.y):
                 self._result_collisions.append(
                     Collision(
                         player,
                         GameEvent.PLAYER_TOP_BASIC_PLATFORM,
                         basic_platform))
 
-            elif (basic_platform.location.x <= player_new_right_border
+            elif (player.location.x + PaintingConst.PLAYER_SIDE_LENGTH
+                    < basic_platform.location.x <= player_new_right_border
                     <= basic_platform.location.x
-                    + basic_platform.get_width()):
+                    + basic_platform.width):
                 self._result_collisions.append(
                     Collision(
                         player,
@@ -179,8 +181,8 @@ class CollisionsProcessor:
                         basic_platform))
 
             elif (basic_platform.location.x <= player_new_left_border
-                    <= basic_platform.location.x
-                    + basic_platform.get_width()):
+                    <= basic_platform.location.x + basic_platform.width
+                    < player.location.x):
                 self._result_collisions.append(
                     Collision(
                         player,
@@ -193,20 +195,32 @@ class CollisionsProcessor:
 
 
 class Collision:
-    moving_object: MovableObject
-    game_event: 'GameEvent'
+    _moving_object: MovableObject
+    _game_event: 'GameEvent'
 
     # May be 'None'. For example, if game object is out of game field's borders
-    collided_object: Optional[GameObject]
+    _collided_object: Optional[GameObject]
 
     def __init__(
             self,
             input_moving_object: MovableObject,
             input_game_event: 'GameEvent',
             input_collided_object: Optional[GameObject]):
-        self.moving_object = input_moving_object
-        self.game_event = input_game_event
-        self.collided_object = input_collided_object
+        self._moving_object = input_moving_object
+        self._game_event = input_game_event
+        self._collided_object = input_collided_object
+    
+    @property
+    def moving_object(self):
+        return self._moving_object
+
+    @property
+    def game_event(self):
+        return self._game_event
+
+    @property
+    def collided_object(self):
+        return self._collided_object
 
 
 class GameEvent(Enum):
