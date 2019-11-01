@@ -50,7 +50,9 @@ class RawMapsContainer:
         """Player with single platform"""
         return GameMap(
             Vector2D(1200, 700),
-            [BasicPlatform(Vector2D(500, 600), 200, 30)],
+            [BasicPlatform(Vector2D(500, 600), 200, 30),
+             BasicPlatform(Vector2D(0, 600), 20, 100),
+             BasicPlatform(Vector2D(1180, 600), 20, 100)],
             [Player(Vector2D(101, 101))])
 
     @staticmethod
