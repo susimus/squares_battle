@@ -3,7 +3,7 @@ from typing import TextIO
 from sys import exit as sys_exit
 
 from engine.engine import GameEngine
-from maps.maps_processor import RawMapsContainer
+from maps import RawMapsContainer
 
 
 def exit_with_exception(
@@ -68,5 +68,5 @@ def run_launcher_logic():
     parser.parse_args()
 
     # TODO: make GUI version of launcher. For now launcher just loads some map
-    game_engine = GameEngine(RawMapsContainer.get_map_3())
+    game_engine = GameEngine(RawMapsContainer.get_map_2())
     game_engine.start_game()
