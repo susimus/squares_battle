@@ -2,7 +2,7 @@ from typing import TypeVar, Union
 from enum import Enum
 from itertools import chain as itertools_chain
 
-from maps.maps_processor import GameMap
+from maps import GameMap
 from engine.game_objects import *
 from engine import ApplicationException
 
