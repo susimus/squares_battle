@@ -5,7 +5,7 @@ from tkinter import (
     NSEW as TK_NSEW)
 from threading import Event
 
-from maps.maps_processor import GameMap
+from maps import GameMap
 from engine.game_objects import *
 from engine import ApplicationException
 
@@ -14,6 +14,7 @@ class GameGUI(Canvas):
     class GameObjectsPainter:
         """Accumulates all painting methods"""
         _rendering_map: GameMap
+        # WouldBeBetter: Create second canvas for double buffering
         _game_canvas: Canvas
 
         def __init__(self, input_gui: Canvas, input_map: GameMap):
@@ -105,11 +106,17 @@ class GameGUI(Canvas):
 
     _render_is_done: Event
 
-    def __init__(self):
+    def __init__(
+            self, input_widgets_root: Optional[tk_Tk] = None, *args, **kwargs):
         """Method for correct Canvas initialization with not None master"""
-        self._widgets_root = tk_Tk()
+        if input_widgets_root is None:
+            self._widgets_root = tk_Tk()
 
-        Canvas.__init__(self, self._widgets_root)
+            Canvas.__init__(self, master=self._widgets_root)
+        else:
+            self._widgets_root = input_widgets_root
+
+            Canvas.__init__(self, *args, **kwargs)
 
     def init(
             self,
@@ -124,8 +131,10 @@ class GameGUI(Canvas):
         self._setup_bindings(input_engine_as_event_listener)
 
         # Start constant checking for rendering necessity
-        self.after(0, self._check_render)
+        if self.master.__class__.__name__ != 'MapEditor':
+            self.after(0, self._check_render)
 
+    # WouldBeBetter: Sync this init with [MapEditor] init
     def _setup_appearance(self, input_map: GameMap):
         """Sets up appearance of game Canvas"""
         self._widgets_root.title('Squares battle')
@@ -174,6 +183,9 @@ class GameGUI(Canvas):
             self._render_is_done.set()
 
         self.after(2, self._check_render)
+
+    def paint_all_game_objects(self):
+        self._gameObjectsPainter.paint_all_game_objects()
 
     @staticmethod
     def run_gui_loop():
