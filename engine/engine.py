@@ -4,7 +4,7 @@ from time import (
 from threading import Thread
 from typing import Set, Callable
 
-from maps.maps_processor import GameMap
+from maps import GameMap
 from user_interface.game_ui import GameGUI, EventListener
 from engine.game_objects import *
 from engine.collisions_processor import (
