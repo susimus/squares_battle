@@ -38,6 +38,14 @@ class GameMap:
         self.immovable_objects = deepcopy(input_immovable_objects)
         self.movable_objects = deepcopy(input_movable_objects)
 
+    def remove_all_game_objects(self):
+        self.immovable_objects = []
+        self.movable_objects = []
+
+    def set(self, input_game_map: 'GameMap'):
+        self.movable_objects = input_game_map.movable_objects
+        self.immovable_objects = input_game_map.immovable_objects
+
 
 class RawMapsContainer:
     """Contains maps initializations via code"""
