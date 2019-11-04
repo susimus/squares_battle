@@ -102,7 +102,7 @@ class GameGUI(Canvas):
 
     _widgets_root: tk_Tk
 
-    _gameObjectsPainter: GameObjectsPainter
+    _game_objects_painter: GameObjectsPainter
 
     _render_is_done: Event
 
@@ -122,7 +122,7 @@ class GameGUI(Canvas):
             self,
             input_map: GameMap,
             input_engine_as_event_listener: 'EventListener'):
-        self._gameObjectsPainter = self.GameObjectsPainter(self, input_map)
+        self._game_objects_painter = self.GameObjectsPainter(self, input_map)
 
         self._render_is_done = Event()
         self._render_is_done.set()
@@ -172,20 +172,20 @@ class GameGUI(Canvas):
 
     def render(self):
         """Called by GameEngine when game field render is needed"""
-        self._render_is_done.clear()
-        self._render_is_done.wait()
+        if self.master.__class__.__name__ != 'MapEditor':
+            self._render_is_done.clear()
+            self._render_is_done.wait()
+        else:
+            self._game_objects_painter.paint_all_game_objects()
 
     def _check_render(self):
         """Every 2 milliseconds checking if rendering is needed"""
         if not self._render_is_done.is_set():
-            self._gameObjectsPainter.paint_all_game_objects()
+            self._game_objects_painter.paint_all_game_objects()
 
             self._render_is_done.set()
 
         self.after(2, self._check_render)
-
-    def paint_all_game_objects(self):
-        self._gameObjectsPainter.paint_all_game_objects()
 
     @staticmethod
     def run_gui_loop():
