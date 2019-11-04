@@ -14,6 +14,9 @@ from engine import ApplicationException
 
 class GameEngine(EventListener):
     """All game logic processes here
+
+    If game map without movable objects is given then engine spawns one
+    [Player] instance on (0, 0) coordinates
     """
     class MapUpdater:
         """All map state updating logic is here
@@ -321,6 +324,10 @@ class GameEngine(EventListener):
         self._game_loop_iterations_count = 0
 
         self._game_map = input_game_map
+
+        if len(self._game_map.movable_objects) == 0:
+            self._game_map.movable_objects.append(Player(Vector2D(0, 0)))
+
         self._map_updater = self.MapUpdater(self)
 
     def key_pressed(self, key_code: int):
