@@ -34,6 +34,9 @@ class MapEditor(tk_Frame):
 
     # Check what button is sunken to find out creation state. Always one and
     # only one creation button should be in pressed state
+    #
+    # Button name MUST be legit game object class. 'globals()[button_name]'
+    # is used in mouse bindings methods
     _creation_button: Dict[str, tk_Button]
     _creation_game_objects: List[str]
 
@@ -61,7 +64,7 @@ class MapEditor(tk_Frame):
         self._game_gui = GameGUI(
             input_widgets_root=self.master, master=self)
         self._game_gui.init(self._game_map, EventListener())
-        self._game_gui.grid(row=0, column=0, rowspan=7)
+        self._game_gui.grid(row=0, column=0, rowspan=8)
 
         self._init_creation_buttons()
 
@@ -69,13 +72,12 @@ class MapEditor(tk_Frame):
 
         self._init_loading_widgets()
 
-    # TODO: Recheck
     def _init_creation_buttons(self):
         self._creation_button = dict()
         self._creation_game_objects = [
             'Player', 'BasicPlatform', 'SpeedUpBuff', 'JumpHeightUpBuff']
 
-        for i in range(4):
+        for i in range(len(self._creation_game_objects)):
             self._creation_button[self._creation_game_objects[i]] = tk_Button(
                 master=self, text=self._creation_game_objects[i])
             self._creation_button[self._creation_game_objects[i]].grid(
@@ -86,12 +88,11 @@ class MapEditor(tk_Frame):
 
         self._creation_button['Player'].configure(relief='sunken')
 
-    # TODO: Recheck
     def _get_creation_button_command(self, sinking_button_name: str) -> (
             Callable[[], None]):
         def result_func():
-            for game_object_name in self._creation_button:
-                self._creation_button[game_object_name].configure(
+            for button_name in self._creation_button:
+                self._creation_button[button_name].configure(
                     relief='raised')
 
             self._creation_button[sinking_button_name].configure(
@@ -132,25 +133,34 @@ class MapEditor(tk_Frame):
                 self._game_gui.render()
 
     def _init_mouse_bindings(self):
+        self.master.bind('<Button-1>', self._add_game_object)
+        self.master.bind('<B1-Motion>', self._set_basic_platform_size)
         self.master.bind(
-            '<Button-1>',
-            self._add_game_object)
+            '<ButtonRelease-1>', self._finish_basic_platform_creation)
 
-        self.master.bind(
-            '<B1-Motion>',
-            self._set_basic_platform_size)
-
+    # TODO: Rename to '_create_...'
     # TODO: Implement [_add_game_object]
     def _add_game_object(self, event):
         """Adds new game object to current game map
 
         Invokes on left mouse button click
         """
-        if self._creation_button['SpeedUpBuff']['relief'] == 'sunken':
-            self._game_map.immovable_objects.append(
-                SpeedUpBuff(Vector2D(event.x, event.y)))
+        for button_name in self._creation_button:
+            if (button_name != 'BasicPlatform'
+                    and self._creation_button[button_name]['relief']
+                    == 'sunken'
+                    and (event.x, event.y) < DEFAULT_RESOLUTION
+                    and event.widget.__class__.__name__ == 'GameGUI'):
+                if button_name == 'Player':
+                    self._game_map.movable_objects.append(
+                        globals()[button_name](Vector2D(event.x, event.y)))
+                else:
+                    self._game_map.immovable_objects.append(
+                        globals()[button_name](Vector2D(event.x, event.y)))
 
-            self._game_gui.render()
+                self._game_gui.render()
+
+                break
 
     # TODO: Implement [_set_basic_platform_size]
     def _set_basic_platform_size(self, event):
@@ -158,7 +168,12 @@ class MapEditor(tk_Frame):
 
         Invokes when left mouse button is held down and moved
         """
-        print(321)
+        if self._creation_button['BasicPlatform']['relief'] == 'sunken':
+            pass
+
+    def _finish_basic_platform_creation(self, event):
+        if self._creation_button['BasicPlatform']['relief'] == 'sunken':
+            pass
 
     # WouldBeBetter: Implement [_move_game_object]
     def _move_game_object(self, event):
