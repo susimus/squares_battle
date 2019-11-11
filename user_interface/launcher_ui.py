@@ -1,6 +1,12 @@
 from argparse import ArgumentParser, Namespace
-from typing import TextIO, Optional
+from typing import TextIO
 from sys import exit as sys_exit
+from pickle import load as pickle_load
+from os import pardir as os_pardir
+from os.path import (
+    join as os_path_join,
+    dirname as os_path_dirname,
+    abspath as os_path_abspath)
 
 from engine import ApplicationException
 from engine.engine import GameEngine
@@ -77,28 +83,42 @@ def run_launcher_logic():
     #  some map
 
     map_name: str = input(
-        'Enter map name. Raw maps names have format: "raw <name>".\n')
-
-    game_engine: Optional[GameEngine] = None
+        'Enter map name. Raw maps names have format: "raw <name>". Non raw '
+        'maps will be loaded from "maps" folder.\n')
 
     if map_name.startswith('raw '):
         try:
-            game_engine = GameEngine(
+            game_engine: GameEngine = GameEngine(
                 getattr(
                     RawMapsContainer,
                     'get_map_' + map_name.split(' ')[1])())
+
+            game_engine.start_game()
+
         except AttributeError:
             exit_with_exception(
                 'Wrong raw map name',
                 LauncherException('Wrong raw map name: ' + map_name),
                 arguments.debug)
+    else:
+        try:
+            map_path: str = os_path_join(
+                os_path_dirname(os_path_abspath(__file__)),
+                os_pardir,
+                'maps',
+                map_name)
 
-    # TODO: Finish custom maps loading from 'maps' folder
+            with open(map_path, 'rb') as map_file_handle:
+                game_engine: GameEngine = GameEngine(
+                    pickle_load(map_file_handle))
 
-    if game_engine is None:
-        pass
+            game_engine.start_game()
 
-    game_engine.start_game()
+        except OSError as occurred_err:
+            exit_with_exception(
+                'Cannot open file: ' + map_name,
+                LauncherException(*occurred_err.args),
+                arguments.debug)
 
 
 class LauncherException(ApplicationException):
