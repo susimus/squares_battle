@@ -133,14 +133,13 @@ class MapEditor(tk_Frame):
                 self._game_gui.render()
 
     def _init_mouse_bindings(self):
-        self.master.bind('<Button-1>', self._add_game_object)
+        self.master.bind('<Button-1>', self._create_game_object)
         self.master.bind('<B1-Motion>', self._set_basic_platform_size)
         self.master.bind(
             '<ButtonRelease-1>', self._finish_basic_platform_creation)
 
-    # TODO: Rename to '_create_...'
-    # TODO: Implement [_add_game_object]
-    def _add_game_object(self, event):
+    # TODO: Implement [_create_game_object]
+    def _create_game_object(self, event):
         """Adds new game object to current game map
 
         Invokes on left mouse button click
@@ -152,8 +151,17 @@ class MapEditor(tk_Frame):
                     and (event.x, event.y) < DEFAULT_RESOLUTION
                     and event.widget.__class__.__name__ == 'GameGUI'):
                 if button_name == 'Player':
-                    self._game_map.movable_objects.append(
-                        globals()[button_name](Vector2D(event.x, event.y)))
+                    if len(self._game_map.movable_objects) == 0:
+                        self._game_map.movable_objects.append(
+                            globals()[button_name](Vector2D(event.x, event.y)))
+                    else:
+                        # If one [Player] instance already exists on map then
+                        # it is forbidden to create another [Player]
+                        # instance on the same map (game will crush
+                        # otherwise). So here firstly created [Player]
+                        # instance is moved to new location
+                        self._game_map.movable_objects[0].location = (
+                            Vector2D(event.x, event.y))
                 else:
                     self._game_map.immovable_objects.append(
                         globals()[button_name](Vector2D(event.x, event.y)))
@@ -171,6 +179,7 @@ class MapEditor(tk_Frame):
         if self._creation_button['BasicPlatform']['relief'] == 'sunken':
             pass
 
+    # TODO: Implement [_finish_basic_platform_creation]
     def _finish_basic_platform_creation(self, event):
         if self._creation_button['BasicPlatform']['relief'] == 'sunken':
             pass
