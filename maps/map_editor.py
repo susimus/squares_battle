@@ -46,15 +46,16 @@ class MapEditor(tk_Frame):
     _load_filename_entry: tk_Entry
     _load_button: tk_Button
 
-    # Game object that currently selected via creation buttons
-    _current_game_object: GameObject
+    # [BasicPlatform] instance that is currently creating via sunken mouse
+    # left button (button 1) in motion
+    _creating_basic_platform: Optional[BasicPlatform]
 
-    # TODO: Implement [init]
     def init(self):
-        self.grid(row=0, column=0)
-
         self._game_map = GameMap(
             Vector2D(*DEFAULT_RESOLUTION), [], [])
+        self._creating_basic_platform = None
+
+        self.grid(row=0, column=0)
 
         self._init_slave_widgets()
 
@@ -138,7 +139,6 @@ class MapEditor(tk_Frame):
         self.master.bind(
             '<ButtonRelease-1>', self._finish_basic_platform_creation)
 
-    # TODO: Implement [_create_game_object]
     def _create_game_object(self, event):
         """Adds new game object to current game map
 
@@ -148,7 +148,6 @@ class MapEditor(tk_Frame):
             if (button_name != 'BasicPlatform'
                     and self._creation_button[button_name]['relief']
                     == 'sunken'
-                    and (event.x, event.y) < DEFAULT_RESOLUTION
                     and event.widget.__class__.__name__ == 'GameGUI'):
                 if button_name == 'Player':
                     if len(self._game_map.movable_objects) == 0:
@@ -176,8 +175,11 @@ class MapEditor(tk_Frame):
 
         Invokes when left mouse button is held down and moved
         """
-        if self._creation_button['BasicPlatform']['relief'] == 'sunken':
-            pass
+        # if self._creation_button['BasicPlatform']['relief'] == 'sunken':
+        #     if self._creating_basic_platform is None:
+        #         self._creating_basic_platform = BasicPlatform(
+        #             Vector2D(event.x, eventx)
+        #         )
 
     # TODO: Implement [_finish_basic_platform_creation]
     def _finish_basic_platform_creation(self, event):
