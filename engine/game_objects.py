@@ -62,6 +62,8 @@ class JumpHeightUpBuff(AbstractBuff):
 @dataclass
 class BasicPlatform(ImmovableObject):
     """Rectangle on which Player can walk"""
+    # Width > 0 => size to the right from location, height > 0 => to the
+    # bottom. If negative then to opposite directions
     _width: int
     _height: int
 
