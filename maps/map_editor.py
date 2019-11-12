@@ -27,7 +27,6 @@ finally:
     from user_interface.game_ui import GameGUI
 
 
-# TODO: Implement [MapEditor]
 class MapEditor(tk_Frame):
     _game_map: GameMap
     _game_gui: GameGUI
@@ -47,7 +46,8 @@ class MapEditor(tk_Frame):
     _load_button: tk_Button
 
     # [BasicPlatform] instance that is currently creating via sunken mouse
-    # left button (button 1) in motion
+    # left button (button 1) in motion. In any other mouse state this var is
+    # [None]
     _creating_basic_platform: Optional[BasicPlatform]
 
     def init(self):
@@ -135,7 +135,7 @@ class MapEditor(tk_Frame):
 
     def _init_mouse_bindings(self):
         self.master.bind('<Button-1>', self._create_game_object)
-        self.master.bind('<B1-Motion>', self._set_basic_platform_size)
+        self.master.bind('<B1-Motion>', self._change_basic_platform_size)
         self.master.bind(
             '<ButtonRelease-1>', self._finish_basic_platform_creation)
 
@@ -145,14 +145,12 @@ class MapEditor(tk_Frame):
         Invokes on left mouse button click
         """
         for button_name in self._creation_button:
-            if (button_name != 'BasicPlatform'
-                    and self._creation_button[button_name]['relief']
-                    == 'sunken'
+            if (self._creation_button[button_name]['relief'] == 'sunken'
                     and event.widget.__class__.__name__ == 'GameGUI'):
                 if button_name == 'Player':
                     if len(self._game_map.movable_objects) == 0:
                         self._game_map.movable_objects.append(
-                            globals()[button_name](Vector2D(event.x, event.y)))
+                            Player(Vector2D(event.x, event.y)))
                     else:
                         # If one [Player] instance already exists on map then
                         # it is forbidden to create another [Player]
@@ -161,30 +159,51 @@ class MapEditor(tk_Frame):
                         # instance is moved to new location
                         self._game_map.movable_objects[0].location = (
                             Vector2D(event.x, event.y))
+
+                elif button_name == 'BasicPlatform':
+                    self._creating_basic_platform = (
+                        BasicPlatform(Vector2D(event.x, event.y), 0, 0))
+
+                    self._game_map.immovable_objects.append(
+                        self._creating_basic_platform)
+
                 else:
                     self._game_map.immovable_objects.append(
                         globals()[button_name](Vector2D(event.x, event.y)))
 
                 self._game_gui.render()
 
-                break
-
-    # TODO: Implement [_set_basic_platform_size]
-    def _set_basic_platform_size(self, event):
+    def _change_basic_platform_size(self, event):
         """Imitates basic platform stretching on its creation
 
         Invokes when left mouse button is held down and moved
         """
-        # if self._creation_button['BasicPlatform']['relief'] == 'sunken':
-        #     if self._creating_basic_platform is None:
-        #         self._creating_basic_platform = BasicPlatform(
-        #             Vector2D(event.x, eventx)
-        #         )
+        if self._creating_basic_platform is not None:
+            self._creating_basic_platform.width = (
+                event.x
+                - self._creating_basic_platform.location.x)
 
-    # TODO: Implement [_finish_basic_platform_creation]
-    def _finish_basic_platform_creation(self, event):
-        if self._creation_button['BasicPlatform']['relief'] == 'sunken':
-            pass
+            self._creating_basic_platform.height = (
+                event.y
+                - self._creating_basic_platform.location.y)
+
+            self._game_gui.render()
+
+    def _finish_basic_platform_creation(self, _):
+        if self._creating_basic_platform is not None:
+            if self._creating_basic_platform.width < 0:
+                self._creating_basic_platform.location.x += (
+                    self._creating_basic_platform.width)
+
+                self._creating_basic_platform.width *= -1
+
+            if self._creating_basic_platform.height < 0:
+                self._creating_basic_platform.location.y += (
+                    self._creating_basic_platform.height)
+
+                self._creating_basic_platform.height *= -1
+
+            self._creating_basic_platform = None
 
     # WouldBeBetter: Implement [_move_game_object]
     def _move_game_object(self, event):
