@@ -145,13 +145,13 @@ class CollisionsProcessor:
             + PaintingConst.PLAYER_SIDE_LENGTH
             + moving_vector.y)
 
-        # WouldBeBetter: Do checks below must be with '='?
         if (player_new_right_border >= basic_platform.location.x
                 and player_new_left_border
                 <= basic_platform.location.x + basic_platform.width
                 and player_new_bottom_border >= basic_platform.location.y
                 and player_new_top_border
                 <= basic_platform.location.y + basic_platform.height):
+            # WouldBeBetter: Do checks below must be with '='?
             if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
                     <= basic_platform.location.y
                     <= player_new_bottom_border
@@ -190,9 +190,45 @@ class CollisionsProcessor:
                         GameEvent.PLAYER_LEFT_BASIC_PLATFORM,
                         basic_platform))
             else:
-                raise CollisionsProcessorException(
-                    '[_check_player_with_basic_platform_collisions] '
-                    'reached unreachable code')
+                # This case fires when basic platform is way too small in
+                # comparison with player
+                #
+                # WouldBeBetter: What this case additionally mean?
+                min_borders_gap: float = min(
+                    abs(player_new_right_border - basic_platform.location.x),
+                    abs(player_new_left_border
+                        - basic_platform.location.x - basic_platform.width),
+                    abs(player_new_bottom_border - basic_platform.location.y),
+                    abs(player_new_top_border
+                        - basic_platform.location.y - basic_platform.height))
+
+                if (min_borders_gap == player_new_right_border
+                        - basic_platform.location.x):
+                    self._result_collisions.append(
+                        Collision(
+                            player,
+                            GameEvent.PLAYER_RIGHT_BASIC_PLATFORM,
+                            basic_platform))
+                elif (min_borders_gap == player_new_left_border
+                        - basic_platform.location.x - basic_platform.width):
+                    self._result_collisions.append(
+                        Collision(
+                            player,
+                            GameEvent.PLAYER_LEFT_BASIC_PLATFORM,
+                            basic_platform))
+                elif (min_borders_gap == player_new_bottom_border
+                      - basic_platform.location.y):
+                    self._result_collisions.append(
+                        Collision(
+                            player,
+                            GameEvent.PLAYER_BOTTOM_BASIC_PLATFORM,
+                            basic_platform))
+                else:
+                    self._result_collisions.append(
+                        Collision(
+                            player,
+                            GameEvent.PLAYER_TOP_BASIC_PLATFORM,
+                            basic_platform))
 
 
 class Collision:
