@@ -4,7 +4,7 @@ from typing import List, Optional
 
 @dataclass
 class GameObject:
-    # Left top pixel position
+    # Left top pixel location
     location: 'Vector2D'
 
 
@@ -64,16 +64,13 @@ class BasicPlatform(ImmovableObject):
     """Rectangle on which Player can walk"""
     # Width > 0 => size to the right from location, height > 0 => to the
     # bottom. If negative then to opposite directions
-    _width: int
-    _height: int
-
-    @property
-    def width(self) -> int:
-        return self._width
-
-    @property
-    def height(self) -> int:
-        return self._height
+    #
+    # Width and height may be negative ONLY in process of creating specific
+    # basic platform inside map editor when left mouse button is held down.
+    # Note that if basic platform have negative width/height then collisions
+    # with player WON'T BE PROCESSED CORRECTLY
+    width: int
+    height: int
 
 
 class MovableObject(GameObject):
@@ -99,7 +96,7 @@ class BasicProjectile(MovableObject):
     fired_player: Player
 
 
-# TODO: Implement [InterfaceObject]
+# WouldBeBetter: Implement [InterfaceObject]
 class InterfaceObject(GameObject):
     """Abstraction for exact rendering order
 
