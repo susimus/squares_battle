@@ -145,6 +145,7 @@ class CollisionsProcessor:
                 + PaintingConst.PLAYER_SIDE_LENGTH
                 + moving_vector.y)
 
+        # WouldBeBetter: Do checks below must be with '='?
         if (player_new_right_border >= basic_platform.location.x
                 and player_new_left_border
                 <= basic_platform.location.x + basic_platform.width
@@ -152,7 +153,7 @@ class CollisionsProcessor:
                 and player_new_top_border
                 <= basic_platform.location.y + basic_platform.height):
             if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
-                    < basic_platform.location.y
+                    <= basic_platform.location.y
                     <= player_new_bottom_border
                     <= basic_platform.location.y + basic_platform.height):
                 self._result_collisions.append(
@@ -163,7 +164,7 @@ class CollisionsProcessor:
 
             elif (basic_platform.location.y <= player_new_top_border
                     <= basic_platform.location.y + basic_platform.height
-                    < player.location.y):
+                    <= player.location.y):
                 self._result_collisions.append(
                     Collision(
                         player,
@@ -171,7 +172,7 @@ class CollisionsProcessor:
                         basic_platform))
 
             elif (player.location.x + PaintingConst.PLAYER_SIDE_LENGTH
-                    < basic_platform.location.x <= player_new_right_border
+                    <= basic_platform.location.x <= player_new_right_border
                     <= basic_platform.location.x
                     + basic_platform.width):
                 self._result_collisions.append(
@@ -182,7 +183,7 @@ class CollisionsProcessor:
 
             elif (basic_platform.location.x <= player_new_left_border
                     <= basic_platform.location.x + basic_platform.width
-                    < player.location.x):
+                    <= player.location.x):
                 self._result_collisions.append(
                     Collision(
                         player,
