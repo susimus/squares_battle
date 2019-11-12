@@ -136,14 +136,14 @@ class CollisionsProcessor:
             basic_platform: BasicPlatform):
         player_new_left_border: float = player.location.x + moving_vector.x
         player_new_right_border: float = (
-                player.location.x
-                + PaintingConst.PLAYER_SIDE_LENGTH
-                + moving_vector.x)
+            player.location.x
+            + PaintingConst.PLAYER_SIDE_LENGTH
+            + moving_vector.x)
         player_new_top_border: float = player.location.y + moving_vector.y
         player_new_bottom_border: float = (
-                player.location.y
-                + PaintingConst.PLAYER_SIDE_LENGTH
-                + moving_vector.y)
+            player.location.y
+            + PaintingConst.PLAYER_SIDE_LENGTH
+            + moving_vector.y)
 
         # WouldBeBetter: Do checks below must be with '='?
         if (player_new_right_border >= basic_platform.location.x
@@ -210,7 +210,7 @@ class Collision:
         self._moving_object = input_moving_object
         self._game_event = input_game_event
         self._collided_object = input_collided_object
-    
+
     @property
     def moving_object(self):
         return self._moving_object

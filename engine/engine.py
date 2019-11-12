@@ -123,9 +123,9 @@ class GameEngine(EventListener):
                             is GameEvent.PLAYER_BORDERS_RIGHT):
                         player_move_vector.x = 0
                         player.location.x = (
-                                self._game_map.game_field_size.x
-                                # '+ 1' for closest to border drawing
-                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+                            self._game_map.game_field_size.x
+                            # '+ 1' for closest to border drawing
+                            - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
                     elif (collision.game_event
                           is GameEvent.PLAYER_BORDERS_LEFT):
@@ -138,8 +138,8 @@ class GameEngine(EventListener):
 
                         # Teleport Player close to game borders
                         player.location.y = (
-                                self._game_map.game_field_size.y
-                                - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+                            self._game_map.game_field_size.y
+                            - PaintingConst.PLAYER_SIDE_LENGTH + 1)
 
                         self._player_is_on_the_ground = True
 
@@ -171,16 +171,16 @@ class GameEngine(EventListener):
                         player_move_vector.y = 0
 
                         player.location.y = (
-                                collision.collided_object.location.y
-                                + collision.collided_object.height + 1)
+                            collision.collided_object.location.y
+                            + collision.collided_object.height + 1)
 
                     elif (collision.game_event
                             is GameEvent.PLAYER_BOTTOM_BASIC_PLATFORM):
                         player_move_vector.y = 0
 
                         player.location.y = (
-                                collision.collided_object.location.y
-                                - PaintingConst.PLAYER_SIDE_LENGTH - 1)
+                            collision.collided_object.location.y
+                            - PaintingConst.PLAYER_SIDE_LENGTH - 1)
 
                         self._player_is_on_the_ground = True
 
@@ -189,16 +189,16 @@ class GameEngine(EventListener):
                         player_move_vector.x = 0
 
                         player.location.x = (
-                                collision.collided_object.location.x
-                                - PaintingConst.PLAYER_SIDE_LENGTH - 1)
+                            collision.collided_object.location.x
+                            - PaintingConst.PLAYER_SIDE_LENGTH - 1)
 
                     elif (collision.game_event
                             is GameEvent.PLAYER_LEFT_BASIC_PLATFORM):
                         player_move_vector.x = 0
 
                         player.location.x = (
-                                collision.collided_object.location.x
-                                + collision.collided_object.width + 1)
+                            collision.collided_object.location.x
+                            + collision.collided_object.width + 1)
 
                     else:
                         raise PlayerCollisionsSwitchError(
