@@ -117,7 +117,7 @@ class GameEngine(EventListener):
                     self,
                     player: Player,
                     collision: Collision,
-                    player_move_vector: Vector2D):
+                    player_move_vector: Vector2D):  # pragma: no cover
                 if collision.collided_object is None:
                     if (collision.game_event
                             is GameEvent.PLAYER_BORDERS_RIGHT):
@@ -287,7 +287,7 @@ class GameEngine(EventListener):
         def __init__(self, game_engine: 'GameEngine'):
             self._state_updater = self.StateUpdater(game_engine)
 
-        def update_map(self):
+        def update_map(self):  # pragma: no cover
             """Main update method that should be invoked from the game loop
 
             All update methods are here"""
@@ -330,13 +330,13 @@ class GameEngine(EventListener):
 
         self._map_updater = self.MapUpdater(self)
 
-    def key_pressed(self, key_code: int):
+    def key_pressed(self, key_code: int):  # pragma: no cover
         """Adds pressed key to 'keysPressed' set
 
         GUI thread enters this method"""
         self._keys_pressed.add(key_code)
 
-    def key_released(self, key_code: int):
+    def key_released(self, key_code: int):  # pragma: no cover
         """Subtracts pressed key from 'keysPressed' set
 
         GUI thread enters this method"""
