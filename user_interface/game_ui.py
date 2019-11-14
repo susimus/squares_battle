@@ -192,12 +192,10 @@ class GameGUI(Canvas):
         # Mouse bindings
         self._widgets_root.bind(
             '<Button-1>',
-            lambda event: engine_as_event_listener.key_pressed(
-                EventListener.BUTTON_1_CODE))
+            lambda event: engine_as_event_listener.lmb_pressed(event))
         self._widgets_root.bind(
             '<ButtonRelease-1>',
-            lambda event: engine_as_event_listener.key_released(
-                EventListener.BUTTON_1_CODE))
+            lambda event: engine_as_event_listener.lmb_released(event))
 
         # EventListener bindings
         self._widgets_root.bind(
@@ -235,16 +233,18 @@ class EventListener:
     It is impossible to have GameEngine import here and GUI import in
     'engine.py' at the same time so GameEngine have this interface.
     """
-    # Button 1 = left mouse button
-    #
-    # This const was created due to consistency of 'event.num' value when
-    # button 1 is pressed or released. It will be always '1'
-    BUTTON_1_CODE: int = 1
-
     def key_released(self, key_code: int):
         pass
 
     def key_pressed(self, key_code: int):
+        pass
+
+    def lmb_pressed(self, event):
+        """lmb -> left mouse button"""
+        pass
+
+    def lmb_released(self, event):
+        """lmb -> left mouse button"""
         pass
 
 
