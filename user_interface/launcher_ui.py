@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from typing import TextIO
+from typing import TextIO, Optional
 from sys import exit as sys_exit
 from pickle import load as pickle_load
 from os import pardir as os_pardir
@@ -86,14 +86,14 @@ def run_launcher_logic():
         'Enter map name. Raw maps names have format: "raw <name>". Non raw '
         'maps will be loaded from "maps" folder.\n')
 
+    game_engine: Optional[GameEngine] = None
+
     if map_name.startswith('raw '):
         try:
-            game_engine: GameEngine = GameEngine(
+            game_engine = GameEngine(
                 getattr(
                     RawMapsContainer,
                     'get_map_' + map_name.split(' ')[1])())
-
-            game_engine.start_game()
 
         except AttributeError:
             exit_with_exception(
@@ -109,16 +109,23 @@ def run_launcher_logic():
                 map_name)
 
             with open(map_path, 'rb') as map_file_handle:
-                game_engine: GameEngine = GameEngine(
+                game_engine = GameEngine(
                     pickle_load(map_file_handle))
-
-            game_engine.start_game()
 
         except OSError as occurred_err:
             exit_with_exception(
                 'Cannot open file: ' + map_name,
                 LauncherException(*occurred_err.args),
                 arguments.debug)
+
+    try:
+        game_engine.start_game()
+    except ApplicationException as occurred_exc:
+        # Improvement: Different messages for user
+        exit_with_exception(
+            "Some exception occurred",
+            occurred_exc,
+            arguments.debug)
 
 
 class LauncherException(ApplicationException):
