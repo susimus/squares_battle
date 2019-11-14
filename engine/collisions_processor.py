@@ -1,6 +1,5 @@
-from typing import TypeVar, Union
+from typing import TypeVar
 from enum import Enum
-from itertools import chain as itertools_chain
 
 from maps import GameMap
 from engine.game_objects import *
@@ -39,10 +38,15 @@ class CollisionsProcessor:
             self._check_player_collisions(
                 moving_object,
                 moving_vector,
-                # Just all non-interface objects in case of no 'middle' phase
-                list(itertools_chain(
-                    self._game_map.movable_objects,
-                    self._game_map.immovable_objects)))
+                # Just all immovable_objects in case of no 'middle' phase
+                self._game_map.immovable_objects)
+
+        elif isinstance(moving_object, ProjectileObject):
+            self._check_projectile_collisions(
+                moving_object,
+                moving_vector,
+                # Just all immovable_objects in case of no 'middle' phase
+                self._game_map.immovable_objects)
 
         else:
             raise CollisionsProcessorException(
@@ -56,9 +60,8 @@ class CollisionsProcessor:
             self,
             player: Player,
             moving_vector: Vector2D,
-            potentially_collided_objects:
-            List[Union[MovableObject, ImmovableObject]]):
-        self._check_player_with_borders_collisions(
+            potentially_collided_objects: List[ImmovableObject]):
+        self._check_player_borders_collisions(
             player, moving_vector)
 
         for game_object in potentially_collided_objects:
@@ -66,11 +69,11 @@ class CollisionsProcessor:
                 continue
 
             elif isinstance(game_object, AbstractBuff):
-                self._check_player_with_buff_collisions(
+                self._check_player_buff_collisions(
                     player, moving_vector, game_object)
 
             elif isinstance(game_object, BasicPlatform):
-                self._check_player_with_basic_platform_collisions(
+                self._check_player_basic_platform_collisions(
                     player, moving_vector, game_object)
 
             else:
@@ -79,7 +82,7 @@ class CollisionsProcessor:
                     "got [some_object] with unknown type: "
                     + game_object.__class__.__name__)
 
-    def _check_player_with_borders_collisions(
+    def _check_player_borders_collisions(
             self,
             player: Player,
             moving_vector: Vector2D):
@@ -103,7 +106,7 @@ class CollisionsProcessor:
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BORDERS_TOP, None))
 
-    def _check_player_with_buff_collisions(
+    def _check_player_buff_collisions(
             self,
             player: Player,
             moving_vector: Vector2D,
@@ -129,7 +132,7 @@ class CollisionsProcessor:
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BUFF, buff))
 
-    def _check_player_with_basic_platform_collisions(
+    def _check_player_basic_platform_collisions(
             self,
             player: Player,
             moving_vector: Vector2D,
@@ -229,6 +232,22 @@ class CollisionsProcessor:
                             player,
                             GameEvent.PLAYER_TOP_BASIC_PLATFORM,
                             basic_platform))
+
+    # TODO: Implement [_check_circle_projectile_collisions]
+    def _check_projectile_collisions(
+            self,
+            projectile: ProjectileObject,
+            moving_vector: Vector2D,
+            potentially_collided_objects: List[ImmovableObject]):
+        pass
+
+    # TODO: Implement [_check_circle_projectile_borders_collisions]
+    def _check_projectile_borders_collisions(self):
+        pass
+
+    # TODO: Implement [_check_circle_projectile_basic_platform_collisions]
+    def _check_projectile_basic_platform_collisions(self):
+        pass
 
 
 class Collision:
