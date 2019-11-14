@@ -20,7 +20,7 @@ class GameEngine(EventListener):
             NOW there is only one main instance of [Player] that can move
             and do stuff
             """
-            # WouldBeBetter: Relocate some global vars from here to game
+            # Improvement: Relocate some global vars from here to game
             #  objects' classes. E.g., [_PLAYER_MOVE_SPEED] -> [Player]
 
             _KEY_CODE_A: int = 65
@@ -287,7 +287,7 @@ class GameEngine(EventListener):
             """Main update method that should be invoked from the game loop
 
             All update methods are here"""
-            # WouldBeBetter: Update interface objects states
+            # Improvement: Update interface objects states
 
             self._state_updater.update_immovable_objects_states()
 

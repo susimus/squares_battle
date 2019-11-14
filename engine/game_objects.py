@@ -69,6 +69,10 @@ class BasicPlatform(ImmovableObject):
     # basic platform inside map editor when left mouse button is held down.
     # Note that if basic platform have negative width/height then collisions
     # with player WON'T BE PROCESSED CORRECTLY
+    #
+    # Improvement: Constant width/height when basic platform is fully created.
+    #  Add field 'size_is_changing' + property check for that field for map
+    #  editor's size changing?
     width: int
     height: int
 
@@ -92,10 +96,9 @@ class Player(MovableObject):
 # TODO: Implement [ProjectileObject]
 @dataclass
 class ProjectileObject(MovableObject):
-    pass
+    moving_vector: 'Vector2D'
 
 
-# TODO: Implement [HandgunProjectile]
 @dataclass
 class HandgunProjectile(ProjectileObject):
     """Handgun projectile
@@ -104,7 +107,6 @@ class HandgunProjectile(ProjectileObject):
     """
 
 
-# TODO: Implement [MachineGunProjectile]
 @dataclass
 class MachineGunProjectile(ProjectileObject):
     """Machine gun projectile
@@ -114,7 +116,7 @@ class MachineGunProjectile(ProjectileObject):
     """
 
 
-# WouldBeBetter: Implement [InterfaceObject]
+# Improvement: Implement [InterfaceObject]
 # class InterfaceObject(GameObject):
 #     """Abstraction for exact rendering order
 #

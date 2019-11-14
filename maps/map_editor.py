@@ -205,7 +205,7 @@ class MapEditor(tk_Frame):
 
             self._creating_basic_platform = None
 
-    # WouldBeBetter: Implement [_move_game_object]
+    # Improvement: Implement [_move_game_object]
     def _move_game_object(self, event):
         """Draw chosen game object on cursor position
 

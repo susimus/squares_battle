@@ -14,7 +14,7 @@ class GameGUI(Canvas):
     class GameObjectsDrawer:
         """Accumulates all painting methods"""
         _rendering_map: GameMap
-        # WouldBeBetter: Create second canvas for double buffering
+        # Improvement: Create second canvas for double buffering
         _game_canvas: Canvas
 
         def __init__(self, input_gui: Canvas, input_map: GameMap):
@@ -24,7 +24,7 @@ class GameGUI(Canvas):
         def draw_all_game_objects(self):
             """Accumulates all painting"""
             self._game_canvas.delete('all')
-            # WouldBeBetter: Paint interface objects
+            # Improvement: Paint interface objects
 
             self._draw_immovable_objects()
 
@@ -163,13 +163,13 @@ class GameGUI(Canvas):
         if self.master.__class__.__name__ != 'MapEditor':
             self.after(0, self._check_render)
 
-    # WouldBeBetter: Sync this init with [MapEditor] init
+    # Improvement: Sync this init with [MapEditor] init
     def _init_appearance(self, input_map: GameMap):
         """Sets up appearance of game Canvas"""
         self._widgets_root.title('Squares battle')
         self._widgets_root.resizable(False, False)
 
-        # WouldBeBetter recolor root's padding. This can be done with creating
+        # Improvement recolor root's padding. This can be done with creating
         #  outer Frame that will serve as user_interface's colored borders with
         #  deletion root's padding at all
 

@@ -79,7 +79,7 @@ def run_launcher_logic():
 
     arguments: Namespace = parser.parse_args()
 
-    # WouldBeBetter: make GUI version of launcher. For now launcher just loads
+    # Improvement: make GUI version of launcher. For now launcher just loads
     #  some map
 
     map_name: str = input(

@@ -20,7 +20,7 @@ class GameMap:
     # showing
     game_field_size: Vector2D
 
-    # WouldBeBetter: Implement [interface_objects]
+    # Improvement: Implement [interface_objects]
     immovable_objects: List[ImmovableObject]
     movable_objects: List[MovableObject]
 
@@ -75,3 +75,13 @@ class RawMapsContainer:
             [SpeedUpBuff(Vector2D(500, 550)),
              JumpHeightUpBuff(Vector2D(800, 550))],
             [Player(Vector2D(0, 0))])
+
+    @staticmethod
+    def get_map_4() -> GameMap:
+        """Player with handgun and machine gun projectiles"""
+        return GameMap(
+            Vector2D(*DEFAULT_RESOLUTION),
+            [],
+            [Player(Vector2D(0, 0)),
+             HandgunProjectile(Vector2D(10, 10)),
+             MachineGunProjectile(Vector2D(100, 10))])

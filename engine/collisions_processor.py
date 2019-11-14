@@ -154,7 +154,7 @@ class CollisionsProcessor:
                 and player_new_bottom_border >= basic_platform.location.y
                 and player_new_top_border
                 <= basic_platform.location.y + basic_platform.height):
-            # WouldBeBetter: Do checks below must be with '='?
+            # Improvement: Do checks below must be with '='?
             if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
                     <= basic_platform.location.y
                     <= player_new_bottom_border
@@ -196,7 +196,7 @@ class CollisionsProcessor:
                 # This case fires when basic platform is way too small in
                 # comparison with player
                 #
-                # WouldBeBetter: What this case additionally mean?
+                # Improvement: What this case additionally mean?
                 min_borders_gap: float = min(
                     abs(player_new_right_border - basic_platform.location.x),
                     abs(player_new_left_border
