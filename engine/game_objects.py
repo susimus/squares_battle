@@ -93,10 +93,14 @@ class Player(MovableObject):
     current_buffs: List[AbstractBuff] = dataclass_field(default_factory=list)
 
 
-# TODO: Implement [ProjectileObject]
 @dataclass
 class ProjectileObject(MovableObject):
-    moving_vector: 'Vector2D'
+    _moving_vector: 'Vector2D'
+    # Improvement: fired_player: Player
+
+    @property
+    def moving_vector(self) -> 'Vector2D':
+        return self._moving_vector
 
 
 @dataclass
