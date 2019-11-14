@@ -143,12 +143,12 @@ class Vector2D:
 class PaintingConst:
     # Player is a square
     PLAYER_SIDE_LENGTH: int = 45
-    # Buffs are squares
+
+    # Buff is a square
     BUFF_SIDE_LENGTH: int = 25
 
-    # TODO: Optimize exact sizes of projectiles
-
     # Handgun projectile is a circle
-    HANDGUN_PROJECTILE_RADIUS: int = 2
+    HANDGUN_PROJECTILE_DIAMETER: int = 7
+
     # Machine gun projectile is a circle
-    MACHINE_GUN_PROJECTILE_RADIUS: int = 4
+    MACHINE_GUN_PROJECTILE_DIAMETER: int = 12
