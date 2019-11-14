@@ -127,15 +127,15 @@ class GameGUI(Canvas):
         self._render_is_done = Event()
         self._render_is_done.set()
 
-        self._setup_appearance(input_map)
-        self._setup_bindings(input_engine_as_event_listener)
+        self._init_appearance(input_map)
+        self._init_bindings(input_engine_as_event_listener)
 
         # Start constant checking for rendering necessity
         if self.master.__class__.__name__ != 'MapEditor':
             self.after(0, self._check_render)
 
     # WouldBeBetter: Sync this init with [MapEditor] init
-    def _setup_appearance(self, input_map: GameMap):
+    def _init_appearance(self, input_map: GameMap):
         """Sets up appearance of game Canvas"""
         self._widgets_root.title('Squares battle')
         self._widgets_root.resizable(False, False)
@@ -158,9 +158,17 @@ class GameGUI(Canvas):
 
         self.grid(sticky=TK_NSEW)
 
-    def _setup_bindings(self, engine_as_event_listener: 'EventListener'):
+    def _init_bindings(self, engine_as_event_listener: 'EventListener'):
         """Player's firing and moving bindings"""
-        # TODO: Mouse bindings
+        # Mouse bindings
+        self._widgets_root.bind(
+            '<Button-1>',
+            lambda event: engine_as_event_listener.key_pressed(
+                EventListener.BUTTON_1_CODE))
+        self._widgets_root.bind(
+            '<ButtonRelease-1>',
+            lambda event: engine_as_event_listener.key_released(
+                EventListener.BUTTON_1_CODE))
 
         # EventListener bindings
         self._widgets_root.bind(
@@ -198,6 +206,12 @@ class EventListener:
     It is impossible to have GameEngine import here and GUI import in
     'engine.py' at the same time so GameEngine have this interface.
     """
+    # Button 1 = left mouse button
+    #
+    # This const was created due to consistency of 'event.num' value when
+    # button 1 is pressed or released. It will be always '1'
+    BUTTON_1_CODE: int = 1
+
     def key_released(self, key_code: int):
         pass
 

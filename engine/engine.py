@@ -13,20 +13,16 @@ from engine import ApplicationException
 
 
 class GameEngine(EventListener):
-    """All game logic processes here
-
-    If game map without movable objects is given then engine spawns one
-    [Player] instance on (0, 0) coordinates
-    """
     class MapUpdater:
-        """All map state updating logic is here
-        """
         class StateUpdater:
             """All game objects state updating is here
 
             NOW there is only one main instance of [Player] that can move
             and do stuff
             """
+            # WouldBeBetter: Relocate some global vars from here to game
+            #  objects' classes. E.g., [_PLAYER_MOVE_SPEED] -> [Player]
+
             _KEY_CODE_A: int = 65
             _KEY_CODE_D: int = 68
             _KEY_CODE_SPACE: int = 32
@@ -325,6 +321,8 @@ class GameEngine(EventListener):
 
         self._game_map = input_game_map
 
+        # If game map without movable objects is given then engine spawns
+        # player on (0, 0) coordinates
         if len(self._game_map.movable_objects) == 0:
             self._game_map.movable_objects.append(Player(Vector2D(0, 0)))
 
@@ -333,13 +331,15 @@ class GameEngine(EventListener):
     def key_pressed(self, key_code: int):  # pragma: no cover
         """Adds pressed key to 'keysPressed' set
 
-        GUI thread enters this method"""
+        GUI thread invokes this method
+        """
         self._keys_pressed.add(key_code)
 
     def key_released(self, key_code: int):  # pragma: no cover
         """Subtracts pressed key from 'keysPressed' set
 
-        GUI thread enters this method"""
+        GUI thread invokes this method
+        """
         self._keys_pressed.discard(key_code)
 
     def start_game(self):  # pragma: no cover

@@ -89,23 +89,41 @@ class Player(MovableObject):
     current_buffs: List[AbstractBuff] = dataclass_field(default_factory=list)
 
 
-# TODO: Implement [BasicProjectile]
+# TODO: Implement [ProjectileObject]
 @dataclass
-class BasicProjectile(MovableObject):
-    """Small projectile-sphere that just flies forward with average speed"""
-    fired_player: Player
+class ProjectileObject(MovableObject):
+    pass
+
+
+# TODO: Implement [HandgunProjectile]
+@dataclass
+class HandgunProjectile(ProjectileObject):
+    """Handgun projectile
+
+    Small sized circle that just flies forward with average speed
+    """
+
+
+# TODO: Implement [MachineGunProjectile]
+@dataclass
+class MachineGunProjectile(ProjectileObject):
+    """Machine gun projectile
+
+    Average sized circle that flies forward with high speed with a chance of
+    firing projectile with some angle from actual cursor direction
+    """
 
 
 # WouldBeBetter: Implement [InterfaceObject]
-class InterfaceObject(GameObject):
-    """Abstraction for exact rendering order
-
-    Rendering order:
-    1. Interface objects
-    2. Immovable objects
-    3. Movable objects
-    """
-    pass
+# class InterfaceObject(GameObject):
+#     """Abstraction for exact rendering order
+#
+#     Rendering order:
+#     1. Interface objects
+#     2. Immovable objects
+#     3. Movable objects
+#     """
+#     pass
 
 
 @dataclass
@@ -125,6 +143,12 @@ class Vector2D:
 class PaintingConst:
     # Player is a square
     PLAYER_SIDE_LENGTH: int = 45
-
     # Buffs are squares
     BUFF_SIDE_LENGTH: int = 25
+
+    # TODO: Optimize exact sizes of projectiles
+
+    # Handgun projectile is a circle
+    HANDGUN_PROJECTILE_RADIUS: int = 2
+    # Machine gun projectile is a circle
+    MACHINE_GUN_PROJECTILE_RADIUS: int = 4
