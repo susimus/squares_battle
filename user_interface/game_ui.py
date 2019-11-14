@@ -11,7 +11,7 @@ from engine import ApplicationException
 
 
 class GameGUI(Canvas):
-    class GameObjectsPainter:
+    class GameObjectsDrawer:
         """Accumulates all painting methods"""
         _rendering_map: GameMap
         # WouldBeBetter: Create second canvas for double buffering
@@ -21,25 +21,25 @@ class GameGUI(Canvas):
             self._game_canvas = input_gui
             self._rendering_map = input_map
 
-        def paint_all_game_objects(self):
+        def draw_all_game_objects(self):
             """Accumulates all painting"""
             self._game_canvas.delete('all')
             # WouldBeBetter: Paint interface objects
 
-            self._paint_immovable_objects()
+            self._draw_immovable_objects()
 
-            self._paint_movable_objects()
+            self._draw_movable_objects()
 
-        def _paint_immovable_objects(self):
+        def _draw_immovable_objects(self):
             for immovable_object in self._rendering_map.immovable_objects:
                 if isinstance(immovable_object, SpeedUpBuff):
-                    self._paint_speed_up_buff(immovable_object)
+                    self._draw_speed_up_buff(immovable_object)
 
                 elif isinstance(immovable_object, JumpHeightUpBuff):
-                    self._paint_jump_height_up_buff(immovable_object)
+                    self._draw_jump_height_up_buff(immovable_object)
 
                 elif isinstance(immovable_object, BasicPlatform):
-                    self._paint_basic_platform(immovable_object)
+                    self._draw_basic_platform(immovable_object)
 
                 else:
                     GameUIException(
@@ -47,7 +47,7 @@ class GameGUI(Canvas):
                         "got [immovable_object] with unknown type: "
                         + immovable_object.__class__.__name__)
 
-        def _paint_speed_up_buff(self, speed_buff: SpeedUpBuff):
+        def _draw_speed_up_buff(self, speed_buff: SpeedUpBuff):
             if not speed_buff.is_charging():
                 self._game_canvas.create_rectangle(
                     speed_buff.location.x,
@@ -57,7 +57,7 @@ class GameGUI(Canvas):
                     fill='green',
                     outline='green')
 
-        def _paint_jump_height_up_buff(self, jump_buff: JumpHeightUpBuff):
+        def _draw_jump_height_up_buff(self, jump_buff: JumpHeightUpBuff):
             if not jump_buff.is_charging():
                 self._game_canvas.create_rectangle(
                     jump_buff.location.x,
@@ -67,7 +67,7 @@ class GameGUI(Canvas):
                     fill='yellow',
                     outline='yellow')
 
-        def _paint_basic_platform(self, basic_platform: BasicPlatform):
+        def _draw_basic_platform(self, basic_platform: BasicPlatform):
             self._game_canvas.create_rectangle(
                 basic_platform.location.x,
                 basic_platform.location.y,
@@ -78,10 +78,10 @@ class GameGUI(Canvas):
                 fill='brown',
                 outline='brown')
 
-        def _paint_movable_objects(self):
+        def _draw_movable_objects(self):
             for movable_object in self._rendering_map.movable_objects:
                 if isinstance(movable_object, Player):
-                    self._paint_player(movable_object)
+                    self._draw_player(movable_object)
 
                 else:
                     GameUIException(
@@ -89,7 +89,7 @@ class GameGUI(Canvas):
                         "got [movable_object] with unknown type: "
                         + movable_object.__class__.__name__)
 
-        def _paint_player(self, player: Player):
+        def _draw_player(self, player: Player):
             self._game_canvas.create_rectangle(
                 player.location.x,
                 player.location.y,
@@ -102,7 +102,7 @@ class GameGUI(Canvas):
 
     _widgets_root: tk_Tk
 
-    _game_objects_painter: GameObjectsPainter
+    _game_objects_painter: GameObjectsDrawer
 
     _render_is_done: Event
 
@@ -122,7 +122,7 @@ class GameGUI(Canvas):
             self,
             input_map: GameMap,
             input_engine_as_event_listener: 'EventListener'):
-        self._game_objects_painter = self.GameObjectsPainter(self, input_map)
+        self._game_objects_painter = self.GameObjectsDrawer(self, input_map)
 
         self._render_is_done = Event()
         self._render_is_done.set()
@@ -184,12 +184,12 @@ class GameGUI(Canvas):
             self._render_is_done.clear()
             self._render_is_done.wait()
         else:
-            self._game_objects_painter.paint_all_game_objects()
+            self._game_objects_painter.draw_all_game_objects()
 
     def _check_render(self):
         """Every 2 milliseconds checking if rendering is needed"""
         if not self._render_is_done.is_set():
-            self._game_objects_painter.paint_all_game_objects()
+            self._game_objects_painter.draw_all_game_objects()
 
             self._render_is_done.set()
 
