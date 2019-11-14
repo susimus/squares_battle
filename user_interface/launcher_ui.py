@@ -121,7 +121,7 @@ def run_launcher_logic():
     try:
         game_engine.start_game()
     except ApplicationException as occurred_exc:
-        # Improvement: Different messages for user
+        # Improvement: Different messages for user. Switch only message!
         exit_with_exception(
             "Some exception occurred",
             occurred_exc,
