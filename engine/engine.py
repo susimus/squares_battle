@@ -302,6 +302,10 @@ class GameEngine(EventListener):
     # this field is just read
     _keys_pressed: Set[int]
 
+    # lmb -> left mouse button. [None] if mouse is not pressed. Tkinter event
+    # otherwise
+    _lmb_pressed_event: Optional
+
     # Not seconds because of possible lags. If lags are presented then all game
     # model will work fine and consistently without leaps that can occur
     # because of seconds counting
@@ -315,10 +319,12 @@ class GameEngine(EventListener):
     _game_map: GameMap
 
     def __init__(self, input_game_map: GameMap):
-        self._keys_pressed = set()
-        self._gui = GameGUI()
         self._game_loop_iterations_count = 0
 
+        self._keys_pressed = set()
+        self._lmb_pressed_event = None
+
+        self._gui = GameGUI()
         self._game_map = input_game_map
 
         # If game map without movable objects is given then engine spawns
@@ -341,6 +347,12 @@ class GameEngine(EventListener):
         GUI thread invokes this method
         """
         self._keys_pressed.discard(key_code)
+
+    def lmb_pressed(self, event):
+        self._lmb_pressed_event = event
+
+    def lmb_released(self, event):
+        self._lmb_pressed_event = None
 
     def start_game(self):  # pragma: no cover
         """Initialize game loop"""
