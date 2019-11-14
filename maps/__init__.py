@@ -73,5 +73,5 @@ class RawMapsContainer:
         return GameMap(
             Vector2D(*DEFAULT_RESOLUTION),
             [SpeedUpBuff(Vector2D(500, 550)),
-             JumpHeightUpBuff(Vector2D(1000, 550))],
+             JumpHeightUpBuff(Vector2D(800, 550))],
             [Player(Vector2D(0, 0))])
