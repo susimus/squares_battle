@@ -83,6 +83,12 @@ class GameGUI(Canvas):
                 if isinstance(movable_object, Player):
                     self._draw_player(movable_object)
 
+                elif isinstance(movable_object, HandgunProjectile):
+                    self._draw_handgun_projectile(movable_object)
+
+                elif isinstance(movable_object, MachineGunProjectile):
+                    self._draw_machine_gun_projectile(movable_object)
+
                 else:
                     GameUIException(
                         "While processing [_paint_movable_objects] method, "
@@ -99,6 +105,29 @@ class GameGUI(Canvas):
                 + PaintingConst.PLAYER_SIDE_LENGTH,
                 fill='blue',
                 outline='blue')
+
+        def _draw_handgun_projectile(self, projectile: HandgunProjectile):
+            self._game_canvas.create_oval(
+                projectile.location.x,
+                projectile.location.y,
+                projectile.location.x
+                + PaintingConst.HANDGUN_PROJECTILE_DIAMETER,
+                projectile.location.y
+                + PaintingConst.HANDGUN_PROJECTILE_DIAMETER,
+                fill='white',
+                outline='white')
+
+        def _draw_machine_gun_projectile(
+                self, projectile: MachineGunProjectile):
+            self._game_canvas.create_oval(
+                projectile.location.x,
+                projectile.location.y,
+                projectile.location.x
+                + PaintingConst.MACHINE_GUN_PROJECTILE_DIAMETER,
+                projectile.location.y
+                + PaintingConst.MACHINE_GUN_PROJECTILE_DIAMETER,
+                fill='white',
+                outline='white')
 
     _widgets_root: tk_Tk
 
