@@ -150,14 +150,14 @@ class GameGUI(Canvas):
     def init(
             self,
             input_map: GameMap,
-            input_engine_as_event_listener: 'EventListener'):
+            input_event_listeners: List['EventListener']):
         self._game_objects_painter = self.GameObjectsDrawer(self, input_map)
 
         self._render_is_done = Event()
         self._render_is_done.set()
 
         self._init_appearance(input_map)
-        self._init_bindings(input_engine_as_event_listener)
+        self._init_bindings(input_event_listeners)
 
         # Start constant checking for rendering necessity
         if self.master.__class__.__name__ != 'MapEditor':
@@ -187,23 +187,24 @@ class GameGUI(Canvas):
 
         self.grid(sticky=TK_NSEW)
 
-    def _init_bindings(self, engine_as_event_listener: 'EventListener'):
+    def _init_bindings(self, input_event_listeners: List['EventListener']):
         """Player's firing and moving bindings"""
-        # Mouse bindings
-        self._widgets_root.bind(
-            '<Button-1>',
-            lambda event: engine_as_event_listener.lmb_event_happened(event))
-        self._widgets_root.bind(
-            '<ButtonRelease-1>',
-            lambda event: engine_as_event_listener.lmb_event_happened(event))
+        for event_listener in input_event_listeners:
+            # Mouse bindings
+            self._widgets_root.bind(
+                '<Button-1>',
+                lambda event: event_listener.lmb_event_happened(event))
+            self._widgets_root.bind(
+                '<ButtonRelease-1>',
+                lambda event: event_listener.lmb_event_happened(event))
 
-        # EventListener bindings
-        self._widgets_root.bind(
-            '<KeyPress>',
-            lambda event: engine_as_event_listener.key_pressed(event.keycode))
-        self._widgets_root.bind(
-            '<KeyRelease>',
-            lambda event: engine_as_event_listener.key_released(event.keycode))
+            # EventListener bindings
+            self._widgets_root.bind(
+                '<KeyPress>',
+                lambda event: event_listener.key_pressed(event.keycode))
+            self._widgets_root.bind(
+                '<KeyRelease>',
+                lambda event: event_listener.key_released(event.keycode))
 
     def render(self):
         """Called by GameEngine when game field render is needed"""
