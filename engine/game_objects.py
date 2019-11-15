@@ -114,7 +114,6 @@ class MovableObject(GameObject):
     2. Immovable objects
     3. Movable objects
     """
-    pass
 
 
 @dataclass
@@ -129,6 +128,8 @@ class Player(MovableObject):
 
 
 class ProjectileObject(MovableObject):
+    PROJECTILE_SPEED: int = 20  # TODO: Optimize this
+
     _moving_vector: 'Vector2D'
     # Improvement: fired_player: Player
 
@@ -143,7 +144,6 @@ class ProjectileObject(MovableObject):
         return self._moving_vector
 
 
-@dataclass
 class HandgunProjectile(ProjectileObject):
     """Handgun projectile
 
@@ -152,7 +152,6 @@ class HandgunProjectile(ProjectileObject):
     CIRCLE_DIAMETER: int = 7
 
 
-@dataclass
 class MachineGunProjectile(ProjectileObject):
     """Machine gun projectile
 
@@ -160,9 +159,11 @@ class MachineGunProjectile(ProjectileObject):
     firing projectile with some angle from actual cursor direction
     """
     # Angle can scatter in this abs radius from zero
-    ANGLE_SCATTER_RADIUS: int = 10  # TODO: Optimize this
+    #
+    # TODO: Optimize this
+    ANGLE_SCATTER_RADIUS: float = 0.0872665  # = 5 degrees
 
-    CIRCLE_DIAMETER: int = 12
+    CIRCLE_DIAMETER: int = 10
 
 
 # Improvement: [InterfaceObject] class
