@@ -15,11 +15,6 @@ from engine import ApplicationException
 class GameEngine(EventListener):
     class MapUpdater:
         class StateUpdater:
-            """All game objects state updating is here
-
-            NOW there is only one main instance of [Player] that can move
-            and do stuff
-            """
             # Improvement: Relocate some global vars from here to game
             #  objects' classes. E.g., [_PLAYER_MOVE_SPEED] -> [Player]
 
@@ -42,6 +37,9 @@ class GameEngine(EventListener):
 
             _game_map: GameMap
             _keys_pressed: Set[int]
+
+            # NOW there is only one main instance of [Player] that can move
+            # and do stuff!
 
             # If so then main [Player] can jump
             # Optimization: When main [Player] is on the ground then no
@@ -272,22 +270,46 @@ class GameEngine(EventListener):
                 buff.check_buff_expiration(
                     self._get_game_loop_iterations_count())
 
-        # TODO: Implement [GameObjectsSpawner]
-        # class GameObjectsSpawner:
-        #     """All game objects spawning is here"""
-        #     _game_map: GameMap
+        # Implement [GameObjectsSpawner]
+        class GameObjectsSpawner:
+            """Spawns and deletes game objects"""
+            _game_map: GameMap
+
+            def __init__(self, game_engine: 'GameEngine'):
+                self._game_map = game_engine._game_map
+
+            # Implement [spawn_game_objects]
+            def spawn_game_objects(self):
+                pass
+
+            def delete_game_object(self, game_object: GameObject):
+                if isinstance(game_object, MovableObject):
+                    self._game_map.movable_objects.remove(game_object)
+
+                elif isinstance(game_object, ImmovableObject):
+                    self._game_map.immovable_objects.remove(game_object)
+
+                # elif isinstance(game_object, InterfaceObject):
+                #     self._game_map.interface_objects.remove(game_object)
+
+                else:
+                    raise GameEngineException(
+                        "[delete_game_object] method got [game_object] with "
+                        "unknown type: " + game_object.__class__.__name__)
 
         _state_updater: StateUpdater
-        # _game_objects_spawner: GameObjectsSpawner
+        _game_objects_spawner: GameObjectsSpawner
 
         def __init__(self, game_engine: 'GameEngine'):
             self._state_updater = self.StateUpdater(game_engine)
+            self._game_objects_spawner = self.GameObjectsSpawner(game_engine)
 
         def update_map(self):  # pragma: no cover
             """Main update method that should be invoked from the game loop
 
             All update methods are here"""
             # Improvement: Update interface objects states
+
 
             self._state_updater.update_immovable_objects_states()
 
