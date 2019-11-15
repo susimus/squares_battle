@@ -346,7 +346,7 @@ class GameEngine(EventListener):
                         self._get_player_hand_cursor_unit_vector(
                             Vector2D(
                                 current_lmb_event.x, current_lmb_event.y)))
-                    spawn_multiplier: float = 20  # TODO: Optimize this
+                    spawn_multiplier: float = 20
                     spawn_location: Vector2D = Vector2D(
                         self._game_map.movable_objects[0].location.x
                         + Player.HAND_LOCATION.x
@@ -503,9 +503,9 @@ class GameEngine(EventListener):
 
             self._gui.render()
 
-            self._time_alignment()
-
             self._game_loop_iterations_count += 1
+
+            self._time_alignment()
 
     @staticmethod
     def _time_alignment():  # pragma: no cover
@@ -524,12 +524,12 @@ class GameEngine(EventListener):
         величин при модификации позиции движущихся объектов.
         """
         # All time below in milliseconds
-        one_iteration_time: int = 1000 // 60
-        millis_in_current_second: int = (
-            int(current_time_in_seconds() * 1000) % 1000)
+        #
+        # one_iteration_time = 1000 / 60 = 16.666666666666668
+        # millis_in_current_second = current_time_in_seconds() * 1000 % 1000
         time_sleep(
-            (one_iteration_time
-             - millis_in_current_second % one_iteration_time)
+            (16.666666666666668
+             - (current_time_in_seconds() * 1000 % 1000) % 16.666666666666668)
             / 1000)
 
     def get_game_loop_iterations_count(self):
