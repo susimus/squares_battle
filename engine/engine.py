@@ -310,6 +310,9 @@ class GameEngine(EventListener):
 
             _selected_weapon: _Weapons
 
+            # One click = one projectile from handgun
+            _handgun_can_fire: bool
+
             def __init__(self, game_engine: 'GameEngine'):
                 self._game_map = game_engine._game_map
                 self._get_game_loop_iterations_count = (
@@ -320,12 +323,13 @@ class GameEngine(EventListener):
 
                 self._selected_weapon = self._Weapons.Handgun
 
+                self._handgun_can_fire = True
+
             def lmb_event_happened(self, event):
                 with self._lmb_event_lock:
                     self._lmb_event = event
 
             def key_pressed(self, key_code: int):
-                print(123)  # debug
                 if key_code == self._KEY_CODE_1:
                     self._selected_weapon = self._Weapons.Handgun
 
@@ -334,18 +338,42 @@ class GameEngine(EventListener):
 
             # Implement [spawn_player_projectiles]
             def spawn_player_projectiles(self):
-                cursor_location: Optional[Vector2D] = None
-
                 with self._lmb_event_lock:
-                    if (self._lmb_event is not None
-                            and self._lmb_event.type.name == 'ButtonPress'):
-                        cursor_location = Vector2D(
-                            self._lmb_event.x, self._lmb_event.y)
+                    current_lmb_event = self._lmb_event
 
-                if cursor_location is not None:
+                if current_lmb_event is not None:
                     moving_unit_vector: Vector2D = (
                         self._get_player_hand_cursor_unit_vector(
-                            cursor_location))
+                            Vector2D(
+                                current_lmb_event.x, current_lmb_event.y)))
+                    spawn_multiplier: float = 20  # TODO: Optimize this
+                    spawn_location: Vector2D = Vector2D(
+                        self._game_map.movable_objects[0].location.x
+                        + Player.HAND_LOCATION.x
+                        + moving_unit_vector.x * spawn_multiplier,
+                        self._game_map.movable_objects[0].location.y
+                        + Player.HAND_LOCATION.y
+                        + moving_unit_vector.y * spawn_multiplier)
+
+                    if self._selected_weapon is self._Weapons.Handgun:
+                        if current_lmb_event.type.name == 'ButtonRelease':
+                            self._handgun_can_fire = True
+                        elif (current_lmb_event.type.name == 'ButtonPress'
+                                and self._handgun_can_fire):
+                            moving_vector: Vector2D = Vector2D(
+                                moving_unit_vector.x
+                                * ProjectileObject.PROJECTILE_SPEED,
+                                moving_unit_vector.y
+                                * ProjectileObject.PROJECTILE_SPEED)
+
+                            self._game_map.movable_objects.append(
+                                HandgunProjectile(
+                                    moving_vector, spawn_location))
+
+                            self._handgun_can_fire = False
+
+                    # elif self._selected_weapon is self._Weapons.MachineGun:
+                    #     pass
 
             def _get_player_hand_cursor_unit_vector(
                     self, cursor_location: Vector2D) -> Vector2D:
