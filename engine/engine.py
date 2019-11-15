@@ -3,6 +3,9 @@ from time import (
     sleep as time_sleep)
 from threading import Thread
 from typing import Set, Callable
+from enum import Enum
+from math import sqrt
+from threading import Lock
 
 from maps import GameMap
 from user_interface.game_ui import GameGUI, EventListener
@@ -12,9 +15,13 @@ from engine.collisions_processor import (
 from engine import ApplicationException
 
 
+# Improvement: ACTUALLY, GameEngine use EventListener methods ONLY for
+#  adding keycodes into [_keys_pressed]. It would be more logical if
+#  [StateUpdater] and [GameObjectsSpawner] have these interface
+#  implemented
 class GameEngine(EventListener):
     class MapUpdater:
-        class StateUpdater:
+        class StateUpdater(EventListener):
             # Improvement: Relocate some global vars from here to game
             #  objects' classes. E.g., [_PLAYER_MOVE_SPEED] -> [Player]
 
@@ -24,6 +31,12 @@ class GameEngine(EventListener):
             _KEY_CODE_A: int = 65
             _KEY_CODE_D: int = 68
             _KEY_CODE_SPACE: int = 32
+
+            # Improvement: Add lock because 'set' operation below is NOT
+            #  atomic! Note that it is NOT needed to pass lock into gui,
+            #  because gui already invokes methods here. Right here,
+            #  in [EventListener] implementation, lock should be used
+            _keys_pressed: Set[int]
 
             # Constant move speed with global multiplier
             _PLAYER_MOVE_SPEED: int = 6
@@ -39,10 +52,10 @@ class GameEngine(EventListener):
             _collisions_processor: CollisionsProcessor
 
             _game_map: GameMap
-            _keys_pressed: Set[int]
 
             # If so then main [Player] can jump
-            # Optimization: When main [Player] is on the ground then no
+            #
+            # Optimization: When [Player] is on the ground then no
             #  collisions with the ground should be initiated
             _player_is_on_the_ground: bool
 
@@ -127,7 +140,7 @@ class GameEngine(EventListener):
                         player.location.x = (
                             self._game_map.game_field_size.x
                             # '+ 1' for closest to border drawing
-                            - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+                            - Player.SIDE_LENGTH + 1)
 
                     elif (collision.game_event
                           is GameEvent.PLAYER_BORDERS_LEFT):
@@ -141,7 +154,7 @@ class GameEngine(EventListener):
                         # Teleport Player close to game borders
                         player.location.y = (
                             self._game_map.game_field_size.y
-                            - PaintingConst.PLAYER_SIDE_LENGTH + 1)
+                            - Player.SIDE_LENGTH + 1)
 
                         self._player_is_on_the_ground = True
 
@@ -182,7 +195,7 @@ class GameEngine(EventListener):
 
                         player.location.y = (
                             collision.collided_object.location.y
-                            - PaintingConst.PLAYER_SIDE_LENGTH - 1)
+                            - Player.SIDE_LENGTH - 1)
 
                         self._player_is_on_the_ground = True
 
@@ -192,7 +205,7 @@ class GameEngine(EventListener):
 
                         player.location.x = (
                             collision.collided_object.location.x
-                            - PaintingConst.PLAYER_SIDE_LENGTH - 1)
+                            - Player.SIDE_LENGTH - 1)
 
                     elif (collision.game_event
                             is GameEvent.PLAYER_LEFT_BASIC_PLATFORM):
@@ -278,25 +291,76 @@ class GameEngine(EventListener):
                 buff.check_buff_expiration(
                     self._get_game_loop_iterations_count())
 
-        # Implement [GameObjectsSpawner]
-        class GameObjectsSpawner:
+        class GameObjectsSpawner(EventListener):
             """Spawns AND despawns game objects"""
-            # Improvement: Realize weapon switching with [EventListener]
-            #  implementation
-
-            _game_map: GameMap
-            _keys_pressed: Set[int]
+            class _Weapons(Enum):
+                Handgun: int = 1
+                MachineGun: int = 2
 
             _KEY_CODE_1: int = 49
             _KEY_CODE_2: int = 50
 
+            _game_map: GameMap
+
+            _get_game_loop_iterations_count: Callable[[], int]
+
+            # lmb (left mouse button) tkinter event
+            _lmb_event: Optional
+            _lmb_event_lock: Lock
+
+            _selected_weapon: _Weapons
+
             def __init__(self, game_engine: 'GameEngine'):
                 self._game_map = game_engine._game_map
-                self._keys_pressed = game_engine._keys_pressed
+                self._get_game_loop_iterations_count = (
+                    game_engine.get_game_loop_iterations_count)
+
+                self._lmb_event_lock = Lock()
+                self._lmb_event = None
+
+                self._selected_weapon = self._Weapons.Handgun
+
+            def lmb_event_happened(self, event):
+                with self._lmb_event_lock:
+                    self._lmb_event = event
+
+            def key_pressed(self, key_code: int):
+                print(123)  # debug
+                if key_code == self._KEY_CODE_1:
+                    self._selected_weapon = self._Weapons.Handgun
+
+                elif key_code == self._KEY_CODE_2:
+                    self._selected_weapon = self._Weapons.MachineGun
 
             # Implement [spawn_player_projectiles]
             def spawn_player_projectiles(self):
-                pass
+                cursor_location: Optional[Vector2D] = None
+
+                with self._lmb_event_lock:
+                    if (self._lmb_event is not None
+                            and self._lmb_event.type.name == 'ButtonPress'):
+                        cursor_location = Vector2D(
+                            self._lmb_event.x, self._lmb_event.y)
+
+                if cursor_location is not None:
+                    moving_unit_vector: Vector2D = (
+                        self._get_player_hand_cursor_unit_vector(
+                            cursor_location))
+
+            def _get_player_hand_cursor_unit_vector(
+                    self, cursor_location: Vector2D) -> Vector2D:
+                abs_player_hand_location: Vector2D = (
+                    self._game_map.movable_objects[0].location
+                    + Player.HAND_LOCATION)
+
+                non_unit_vector: Vector2D = (
+                        cursor_location - abs_player_hand_location)
+                non_unit_vector_length: float = sqrt(
+                    non_unit_vector.x ** 2 + non_unit_vector.y ** 2)
+
+                return Vector2D(
+                    non_unit_vector.x / non_unit_vector_length,
+                    non_unit_vector.y / non_unit_vector_length)
 
             def check_movable_objects_for_despawning(self):
                 i: int = 0
@@ -318,7 +382,7 @@ class GameEngine(EventListener):
             self._game_objects_spawner = self.GameObjectsSpawner(game_engine)
 
         # Now there is only one main instance of [Player] that can move
-        # and do stuff!
+        # and do stuff! It's always first element in [movable_objects] array
         def update_map(self):  # pragma: no cover
             """Main update method that should be invoked from the gameloop"""
             # Improvement: Is this place optimal for player's projectiles
@@ -335,18 +399,19 @@ class GameEngine(EventListener):
             # Improvement: Is this place optimal for deletion checking?
             self._game_objects_spawner.check_movable_objects_for_despawning()
 
+        @property
+        def state_updater(self):
+            return self._state_updater
+
+        @property
+        def game_objects_spawner(self):
+            return self._game_objects_spawner
+
     _map_updater: MapUpdater
 
     _gui: GameGUI
 
-    # All key codes of keys that are currently pressed. Without lock because
-    # modifying appears only in 'event listener' methods. In all other places
-    # this field is just read
     _keys_pressed: Set[int]
-
-    # lmb -> left mouse button. [None] if mouse is not pressed. Tkinter event
-    # otherwise
-    _lmb_pressed_event: Optional
 
     # Not seconds because of possible lags. If lags are presented then all game
     # model will work fine and consistently without leaps that can occur
@@ -390,15 +455,13 @@ class GameEngine(EventListener):
         """
         self._keys_pressed.discard(key_code)
 
-    def lmb_pressed(self, event):
-        self._lmb_pressed_event = event
-
-    def lmb_released(self, event):
-        self._lmb_pressed_event = None
-
     def start_game(self):  # pragma: no cover
         """Initialize game loop"""
-        self._gui.init(self._game_map, self)
+        self._gui.init(
+            self._game_map,
+            [self,
+             self._map_updater.state_updater,
+             self._map_updater.game_objects_spawner])
 
         Thread(target=self._game_loop, daemon=True).start()
         # Right here several renderings CANNOT be lost
