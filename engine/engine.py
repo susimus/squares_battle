@@ -4,8 +4,9 @@ from time import (
 from threading import Thread
 from typing import Set, Callable
 from enum import Enum
-from math import sqrt
+from math import sqrt, sin, cos
 from threading import Lock
+from random import uniform as random_uniform
 
 from maps import GameMap
 from user_interface.game_ui import GameGUI, EventListener
@@ -372,8 +373,36 @@ class GameEngine(EventListener):
 
                             self._handgun_can_fire = False
 
-                    # elif self._selected_weapon is self._Weapons.MachineGun:
-                    #     pass
+                    elif self._selected_weapon is self._Weapons.MachineGun:
+                        if (current_lmb_event.type.name
+                                in ['ButtonPress', 'Motion']):
+                            # TODO: Projectile scatter
+                            moving_vector: Vector2D = Vector2D(0, 0)
+
+                            # In radians
+                            rotation_angle: float = random_uniform(
+                                -MachineGunProjectile.ANGLE_SCATTER_RADIUS,
+                                MachineGunProjectile.ANGLE_SCATTER_RADIUS)
+
+                            moving_vector.x = (
+                                cos(rotation_angle)
+                                * moving_unit_vector.x
+                                * ProjectileObject.PROJECTILE_SPEED
+                                - sin(rotation_angle)
+                                * moving_unit_vector.y
+                                * ProjectileObject.PROJECTILE_SPEED)
+
+                            moving_vector.y = (
+                                sin(rotation_angle)
+                                * moving_unit_vector.x
+                                * ProjectileObject.PROJECTILE_SPEED
+                                + cos(rotation_angle)
+                                * moving_unit_vector.y
+                                * ProjectileObject.PROJECTILE_SPEED)
+
+                            self._game_map.movable_objects.append(
+                                MachineGunProjectile(
+                                    moving_vector, spawn_location))
 
             def _get_player_hand_cursor_unit_vector(
                     self, cursor_location: Vector2D) -> Vector2D:
