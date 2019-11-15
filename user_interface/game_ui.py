@@ -189,22 +189,29 @@ class GameGUI(Canvas):
 
     def _init_bindings(self, input_event_listeners: List['EventListener']):
         """Player's firing and moving bindings"""
-        for event_listener in input_event_listeners:
-            # Mouse bindings
-            self._widgets_root.bind(
-                '<Button-1>',
-                lambda event: event_listener.lmb_event_happened(event))
-            self._widgets_root.bind(
-                '<ButtonRelease-1>',
-                lambda event: event_listener.lmb_event_happened(event))
+        def notify_listeners_about_lmb_event(event):
+            for event_listener in input_event_listeners:
+                event_listener.lmb_event_happened(event)
 
-            # EventListener bindings
-            self._widgets_root.bind(
-                '<KeyPress>',
-                lambda event: event_listener.key_pressed(event.keycode))
-            self._widgets_root.bind(
-                '<KeyRelease>',
-                lambda event: event_listener.key_released(event.keycode))
+        def notify_listeners_about_key_pressed(event):
+            for event_listener in input_event_listeners:
+                event_listener.key_pressed(event.keycode)
+
+        def notify_listeners_about_key_released(event):
+            for event_listener in input_event_listeners:
+                event_listener.key_released(event.keycode)
+
+        # Mouse bindings
+        self._widgets_root.bind(
+            '<Button-1>', notify_listeners_about_lmb_event)
+        self._widgets_root.bind(
+            '<ButtonRelease-1>', notify_listeners_about_lmb_event)
+        
+        # EventListener bindings
+        self._widgets_root.bind(
+            '<KeyPress>', notify_listeners_about_key_pressed)
+        self._widgets_root.bind(
+            '<KeyRelease>', notify_listeners_about_key_released)
 
     def render(self):
         """Called by GameEngine when game field render is needed"""
