@@ -52,8 +52,8 @@ class GameGUI(Canvas):
                 self._game_canvas.create_rectangle(
                     speed_buff.location.x,
                     speed_buff.location.y,
-                    speed_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
-                    speed_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
+                    speed_buff.location.x + AbstractBuff.SIDE_LENGTH,
+                    speed_buff.location.y + AbstractBuff.SIDE_LENGTH,
                     fill='green',
                     outline='green')
 
@@ -62,8 +62,8 @@ class GameGUI(Canvas):
                 self._game_canvas.create_rectangle(
                     jump_buff.location.x,
                     jump_buff.location.y,
-                    jump_buff.location.x + PaintingConst.BUFF_SIDE_LENGTH,
-                    jump_buff.location.y + PaintingConst.BUFF_SIDE_LENGTH,
+                    jump_buff.location.x + AbstractBuff.SIDE_LENGTH,
+                    jump_buff.location.y + AbstractBuff.SIDE_LENGTH,
                     fill='yellow',
                     outline='yellow')
 
@@ -100,9 +100,9 @@ class GameGUI(Canvas):
                 player.location.x,
                 player.location.y,
                 player.location.x
-                + PaintingConst.PLAYER_SIDE_LENGTH,
+                + Player.SIDE_LENGTH,
                 player.location.y
-                + PaintingConst.PLAYER_SIDE_LENGTH,
+                + Player.SIDE_LENGTH,
                 fill='blue',
                 outline='blue')
 
@@ -111,9 +111,9 @@ class GameGUI(Canvas):
                 projectile.location.x,
                 projectile.location.y,
                 projectile.location.x
-                + PaintingConst.HANDGUN_PROJECTILE_DIAMETER,
+                + HandgunProjectile.CIRCLE_DIAMETER,
                 projectile.location.y
-                + PaintingConst.HANDGUN_PROJECTILE_DIAMETER,
+                + HandgunProjectile.CIRCLE_DIAMETER,
                 fill='white',
                 outline='white')
 
@@ -123,9 +123,9 @@ class GameGUI(Canvas):
                 projectile.location.x,
                 projectile.location.y,
                 projectile.location.x
-                + PaintingConst.MACHINE_GUN_PROJECTILE_DIAMETER,
+                + MachineGunProjectile.CIRCLE_DIAMETER,
                 projectile.location.y
-                + PaintingConst.MACHINE_GUN_PROJECTILE_DIAMETER,
+                + MachineGunProjectile.CIRCLE_DIAMETER,
                 fill='white',
                 outline='white')
 

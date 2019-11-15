@@ -3,6 +3,23 @@ from typing import List, Optional
 
 
 @dataclass
+class Vector2D:
+    """Vector of two coordinates: X, Y
+
+    All positions or position modifiers in game should be vectors of two
+    coordinates
+    """
+    x: float
+    y: float
+
+    def __add__(self, other: 'Vector2D'):
+        return Vector2D(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: 'Vector2D'):
+        return Vector2D(self.x - other.x, self.y - other.y)
+
+
+@dataclass
 class GameObject:
     # Left top pixel location
     location: 'Vector2D'
@@ -22,6 +39,9 @@ class ImmovableObject(GameObject):
 
 @dataclass
 class AbstractBuff(ImmovableObject):
+    # Buff is a square
+    SIDE_LENGTH: int = 25
+
     # Time in game loop iterations
     _recharge_time: int = dataclass_field(default=200)
 
@@ -99,6 +119,12 @@ class MovableObject(GameObject):
 
 @dataclass
 class Player(MovableObject):
+    # If player on (0, 0) location
+    HAND_LOCATION: 'Vector2D' = Vector2D(30, 22)
+
+    # Player is a square
+    SIDE_LENGTH: int = 45
+
     current_buffs: List[AbstractBuff] = dataclass_field(default_factory=list)
 
 
@@ -122,6 +148,7 @@ class HandgunProjectile(ProjectileObject):
 
     Small sized circle that just flies forward with average speed
     """
+    CIRCLE_DIAMETER: int = 7
 
 
 @dataclass
@@ -132,7 +159,9 @@ class MachineGunProjectile(ProjectileObject):
     firing projectile with some angle from actual cursor direction
     """
     # Angle can scatter in this abs radius from zero
-    ANGLE_SCATTER_RADIUS: int = 10
+    ANGLE_SCATTER_RADIUS: int = 10  # TODO: Optimize this
+
+    CIRCLE_DIAMETER: int = 12
 
 
 # Improvement: [InterfaceObject] class
@@ -145,31 +174,3 @@ class MachineGunProjectile(ProjectileObject):
 #     3. Movable objects
 #     """
 #     pass
-
-
-@dataclass
-class Vector2D:
-    """Vector of two coordinates: X, Y
-
-    All positions or position modifiers in game should be vectors of two
-    coordinates
-    """
-    x: float
-    y: float
-
-    def __add__(self, other):
-        return Vector2D(self.x + other.x, self.y + other.y)
-
-
-class PaintingConst:
-    # Player is a square
-    PLAYER_SIDE_LENGTH: int = 45
-
-    # Buff is a square
-    BUFF_SIDE_LENGTH: int = 25
-
-    # Handgun projectile is a circle
-    HANDGUN_PROJECTILE_DIAMETER: int = 7
-
-    # Machine gun projectile is a circle
-    MACHINE_GUN_PROJECTILE_DIAMETER: int = 12

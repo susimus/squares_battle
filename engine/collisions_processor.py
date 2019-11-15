@@ -87,7 +87,7 @@ class CollisionsProcessor:
             player: Player,
             moving_vector: Vector2D):
         # Horizontal
-        if (player.location.x + PaintingConst.PLAYER_SIDE_LENGTH
+        if (player.location.x + Player.SIDE_LENGTH
                 + moving_vector.x > self._game_map.game_field_size.x):
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BORDERS_RIGHT, None))
@@ -97,7 +97,7 @@ class CollisionsProcessor:
                 Collision(player, GameEvent.PLAYER_BORDERS_LEFT, None))
 
         # Vertical
-        if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
+        if (player.location.y + Player.SIDE_LENGTH
                 + moving_vector.y > self._game_map.game_field_size.y):
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BORDERS_BOTTOM, None))
@@ -114,20 +114,20 @@ class CollisionsProcessor:
         player_new_left_border: float = player.location.x + moving_vector.x
         player_new_right_border: float = (
             player.location.x
-            + PaintingConst.PLAYER_SIDE_LENGTH
+            + Player.SIDE_LENGTH
             + moving_vector.x)
         player_new_top_border: float = player.location.y + moving_vector.y
         player_new_bottom_border: float = (
             player.location.y
-            + PaintingConst.PLAYER_SIDE_LENGTH
+            + Player.SIDE_LENGTH
             + moving_vector.y)
 
         if (player_new_right_border >= buff.location.x
                 and player_new_left_border
-                <= buff.location.x + PaintingConst.BUFF_SIDE_LENGTH
+                <= buff.location.x + AbstractBuff.SIDE_LENGTH
                 and player_new_bottom_border >= buff.location.y
                 and player_new_top_border
-                <= buff.location.y + PaintingConst.BUFF_SIDE_LENGTH
+                <= buff.location.y + AbstractBuff.SIDE_LENGTH
                 and not buff.is_charging()):
             self._result_collisions.append(
                 Collision(player, GameEvent.PLAYER_BUFF, buff))
@@ -140,12 +140,12 @@ class CollisionsProcessor:
         player_new_left_border: float = player.location.x + moving_vector.x
         player_new_right_border: float = (
             player.location.x
-            + PaintingConst.PLAYER_SIDE_LENGTH
+            + Player.SIDE_LENGTH
             + moving_vector.x)
         player_new_top_border: float = player.location.y + moving_vector.y
         player_new_bottom_border: float = (
             player.location.y
-            + PaintingConst.PLAYER_SIDE_LENGTH
+            + Player.SIDE_LENGTH
             + moving_vector.y)
 
         if (player_new_right_border >= basic_platform.location.x
@@ -155,7 +155,7 @@ class CollisionsProcessor:
                 and player_new_top_border
                 <= basic_platform.location.y + basic_platform.height):
             # Improvement: Do checks below must be with '='?
-            if (player.location.y + PaintingConst.PLAYER_SIDE_LENGTH
+            if (player.location.y + Player.SIDE_LENGTH
                     <= basic_platform.location.y
                     <= player_new_bottom_border
                     <= basic_platform.location.y + basic_platform.height):
@@ -174,7 +174,7 @@ class CollisionsProcessor:
                         GameEvent.PLAYER_TOP_BASIC_PLATFORM,
                         basic_platform))
 
-            elif (player.location.x + PaintingConst.PLAYER_SIDE_LENGTH
+            elif (player.location.x + Player.SIDE_LENGTH
                     <= basic_platform.location.x <= player_new_right_border
                     <= basic_platform.location.x
                     + basic_platform.width):
