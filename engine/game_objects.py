@@ -99,11 +99,11 @@ class BasicPlatform(ImmovableObject):
     width: int
     height: int
 
-    def __init__(self, in_width: int, in_height: int, *args, **kwargs):
+    def __init__(self, input_width: int, input_height: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.width = in_width
-        self.height = in_height
+        self.width = input_width
+        self.height = input_height
 
 
 class MovableObject(GameObject):
@@ -132,10 +132,11 @@ class ProjectileObject(MovableObject):
     _moving_vector: 'Vector2D'
     # Improvement: fired_player: Player
 
-    def __init__(self, in_moving_vector: 'Vector2D', *args, **kwargs):
+    def __init__(self, input_moving_vector: 'Vector2D', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._moving_vector = Vector2D(in_moving_vector.x, in_moving_vector.y)
+        self._moving_vector = (
+            Vector2D(input_moving_vector.x, input_moving_vector.y))
 
     @property
     def moving_vector(self) -> 'Vector2D':
