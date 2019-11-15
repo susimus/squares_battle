@@ -192,10 +192,10 @@ class GameGUI(Canvas):
         # Mouse bindings
         self._widgets_root.bind(
             '<Button-1>',
-            lambda event: engine_as_event_listener.lmb_pressed(event))
+            lambda event: engine_as_event_listener.lmb_event_happened(event))
         self._widgets_root.bind(
             '<ButtonRelease-1>',
-            lambda event: engine_as_event_listener.lmb_released(event))
+            lambda event: engine_as_event_listener.lmb_event_happened(event))
 
         # EventListener bindings
         self._widgets_root.bind(
@@ -239,11 +239,7 @@ class EventListener:
     def key_pressed(self, key_code: int):
         pass
 
-    def lmb_pressed(self, event):
-        """lmb -> left mouse button"""
-        pass
-
-    def lmb_released(self, event):
+    def lmb_event_happened(self, event):
         """lmb -> left mouse button"""
         pass
 
