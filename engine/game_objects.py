@@ -6,6 +6,7 @@ from typing import List, Optional
 class GameObject:
     # Left top pixel location
     location: 'Vector2D'
+    will_be_deleted: bool = dataclass_field(default=False)
 
 
 class ImmovableObject(GameObject):
@@ -59,7 +60,6 @@ class JumpHeightUpBuff(AbstractBuff):
     pass
 
 
-@dataclass
 class BasicPlatform(ImmovableObject):
     """Rectangle on which Player can walk"""
     # Width > 0 => size to the right from location, height > 0 => to the
@@ -73,8 +73,17 @@ class BasicPlatform(ImmovableObject):
     # Improvement: Constant width/height when basic platform is fully created.
     #  Add field 'size_is_changing' + property check for that field for map
     #  editor's size changing?
+    #  OR
+    #  Create new basic platform every time when size is changing in process
+    #  of mouse motion?
     width: int
     height: int
+
+    def __init__(self, in_width: int, in_height: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.width = in_width
+        self.height = in_height
 
 
 class MovableObject(GameObject):
@@ -93,10 +102,14 @@ class Player(MovableObject):
     current_buffs: List[AbstractBuff] = dataclass_field(default_factory=list)
 
 
-@dataclass
 class ProjectileObject(MovableObject):
     _moving_vector: 'Vector2D'
     # Improvement: fired_player: Player
+
+    def __init__(self, in_moving_vector: 'Vector2D', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._moving_vector = Vector2D(in_moving_vector.x, in_moving_vector.y)
 
     @property
     def moving_vector(self) -> 'Vector2D':
@@ -120,7 +133,7 @@ class MachineGunProjectile(ProjectileObject):
     """
 
 
-# Improvement: Implement [InterfaceObject]
+# Improvement: [InterfaceObject] class
 # class InterfaceObject(GameObject):
 #     """Abstraction for exact rendering order
 #
