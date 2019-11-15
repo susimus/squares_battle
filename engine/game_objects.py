@@ -6,7 +6,7 @@ from typing import List, Optional
 class GameObject:
     # Left top pixel location
     location: 'Vector2D'
-    will_be_deleted: bool = dataclass_field(default=False)
+    should_be_deleted: bool = dataclass_field(default=False)
 
 
 class ImmovableObject(GameObject):
