@@ -18,6 +18,9 @@ class GameEngine(EventListener):
             # Improvement: Relocate some global vars from here to game
             #  objects' classes. E.g., [_PLAYER_MOVE_SPEED] -> [Player]
 
+            # Improvement: Realize 'space' pressing with [EventListener]
+            #  implementation when pressing switches 'space_was_pressed' flag?
+
             _KEY_CODE_A: int = 65
             _KEY_CODE_D: int = 68
             _KEY_CODE_SPACE: int = 32
@@ -37,9 +40,6 @@ class GameEngine(EventListener):
 
             _game_map: GameMap
             _keys_pressed: Set[int]
-
-            # NOW there is only one main instance of [Player] that can move
-            # and do stuff!
 
             # If so then main [Player] can jump
             # Optimization: When main [Player] is on the ground then no
@@ -72,11 +72,19 @@ class GameEngine(EventListener):
                     if isinstance(movable_object, Player):
                         self._update_player_state(movable_object)
 
+                    elif isinstance(movable_object, ProjectileObject):
+                        # Now only player can fire projectiles
+                        self._update_player_projectile_state(movable_object)
+
                     else:
                         GameEngineException(
                             "While processing [update_movable_objects_states] "
                             "method, got [movable_object] with unknown type: "
                             + movable_object.__class__.__name__)
+
+            @staticmethod
+            def _update_player_projectile_state(projectile: ProjectileObject):
+                projectile.location += projectile.moving_vector
 
             def _refresh_global_movement_multipliers(self):
                 self._PMS_gb_multiplier = self._IJV_gb_multiplier = 1
@@ -272,30 +280,35 @@ class GameEngine(EventListener):
 
         # Implement [GameObjectsSpawner]
         class GameObjectsSpawner:
-            """Spawns and deletes game objects"""
+            """Spawns AND despawns game objects"""
+            # Improvement: Realize weapon switching with [EventListener]
+            #  implementation
+
             _game_map: GameMap
+            _keys_pressed: Set[int]
+
+            _KEY_CODE_1: int = 49
+            _KEY_CODE_2: int = 50
 
             def __init__(self, game_engine: 'GameEngine'):
                 self._game_map = game_engine._game_map
+                self._keys_pressed = game_engine._keys_pressed
 
-            # Implement [spawn_game_objects]
-            def spawn_game_objects(self):
+            # Implement [spawn_player_projectiles]
+            def spawn_player_projectiles(self):
                 pass
 
-            def delete_game_object(self, game_object: GameObject):
-                if isinstance(game_object, MovableObject):
-                    self._game_map.movable_objects.remove(game_object)
+            def check_movable_objects_for_despawning(self):
+                i: int = 0
 
-                elif isinstance(game_object, ImmovableObject):
-                    self._game_map.immovable_objects.remove(game_object)
+                while i < len(self._game_map.movable_objects):
+                    movable_object: MovableObject = (
+                        self._game_map.movable_objects[i])
 
-                # elif isinstance(game_object, InterfaceObject):
-                #     self._game_map.interface_objects.remove(game_object)
-
-                else:
-                    raise GameEngineException(
-                        "[delete_game_object] method got [game_object] with "
-                        "unknown type: " + game_object.__class__.__name__)
+                    if movable_object.should_be_despawned:
+                        self._game_map.movable_objects.remove(movable_object)
+                    else:
+                        i += 1
 
         _state_updater: StateUpdater
         _game_objects_spawner: GameObjectsSpawner
@@ -304,16 +317,23 @@ class GameEngine(EventListener):
             self._state_updater = self.StateUpdater(game_engine)
             self._game_objects_spawner = self.GameObjectsSpawner(game_engine)
 
+        # Now there is only one main instance of [Player] that can move
+        # and do stuff!
         def update_map(self):  # pragma: no cover
-            """Main update method that should be invoked from the game loop
+            """Main update method that should be invoked from the gameloop"""
+            # Improvement: Is this place optimal for player's projectiles
+            #  spawning?
+            self._game_objects_spawner.spawn_player_projectiles()
 
-            All update methods are here"""
-            # Improvement: Update interface objects states
-
+            # Improvement:
+            #  self._state_updater.update_interface_objects_states()
 
             self._state_updater.update_immovable_objects_states()
 
             self._state_updater.update_movable_objects_states()
+
+            # Improvement: Is this place optimal for deletion checking?
+            self._game_objects_spawner.check_movable_objects_for_despawning()
 
     _map_updater: MapUpdater
 
