@@ -20,7 +20,7 @@ class GameMap:
     # showing
     game_field_size: Vector2D
 
-    # Improvement: Implement [interface_objects]
+    # Improvement: interface_objects: List[InterfaceObject]
     immovable_objects: List[ImmovableObject]
     movable_objects: List[MovableObject]
 
@@ -59,12 +59,12 @@ class RawMapsContainer:
 
     @staticmethod
     def get_map_2() -> GameMap:
-        """Player with single platform"""
+        """Player with three platforms"""
         return GameMap(
             Vector2D(*DEFAULT_RESOLUTION),
-            [BasicPlatform(Vector2D(400, 600), 200, 30),  # Center
-             BasicPlatform(Vector2D(0, 600), 20, 100),  # Left
-             BasicPlatform(Vector2D(980, 600), 20, 100)],  # Right
+            [BasicPlatform(200, 30, Vector2D(400, 600)),  # Center
+             BasicPlatform(20, 100, Vector2D(0, 600)),  # Left
+             BasicPlatform(20, 100, Vector2D(980, 600))],  # Right
             [Player(Vector2D(101, 101))])
 
     @staticmethod

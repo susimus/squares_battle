@@ -162,7 +162,7 @@ class MapEditor(tk_Frame):
 
                 elif button_name == 'BasicPlatform':
                     self._creating_basic_platform = (
-                        BasicPlatform(Vector2D(event.x, event.y), 0, 0))
+                        BasicPlatform(0, 0, Vector2D(event.x, event.y)))
 
                     self._game_map.immovable_objects.append(
                         self._creating_basic_platform)
@@ -205,7 +205,7 @@ class MapEditor(tk_Frame):
 
             self._creating_basic_platform = None
 
-    # Improvement: Implement [_move_game_object]
+    # Improvement: [_move_game_object] method
     def _move_game_object(self, event):
         """Draw chosen game object on cursor position
 
