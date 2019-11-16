@@ -556,8 +556,6 @@ class GameEngine(EventListener):
         # Game loop is in a daemon thread so it will proceed until user
         # interface thread is closed
         while True:
-            print(len(self._game_map.movable_objects))  # debug
-
             self._map_updater.update_map()
 
             self._gui.render()
