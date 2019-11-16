@@ -233,25 +233,44 @@ class CollisionsProcessor:
                             GameEvent.PLAYER_TOP_BASIC_PLATFORM,
                             basic_platform))
 
-    # TODO: Implement [_check_circle_projectile_collisions]
     def _check_projectile_collisions(
             self,
             projectile: ProjectileObject,
-            moving_vector: Vector2D,
-            potentially_collided_objects: List[ImmovableObject]):
-        pass
+            # moving_vector
+            _: Vector2D,
+            # potentially_collided_objects
+            __: List[ImmovableObject]):
+        self._check_projectile_borders_collisions(projectile)
 
-    # TODO: Implement [_check_circle_projectile_borders_collisions]
-    def _check_projectile_borders_collisions(self):
-        pass
+    def _check_projectile_borders_collisions(
+            self, projectile: ProjectileObject):
+        if (isinstance(projectile, HandgunProjectile)
+                or isinstance(projectile, MachineGunProjectile)):
+            circle_diameter: int = projectile.CIRCLE_DIAMETER
+        else:
+            raise CollisionsProcessorException(
+                '[projectile] has unknown type: '
+                + projectile.__class__.__name__)
 
-    # TODO: Implement [_check_circle_projectile_basic_platform_collisions]
+        if (projectile.location.y + circle_diameter <= 0  # Borders' top
+            or projectile.location.y
+                >= self._game_map.game_field_size.y  # Borders' bottom
+            or projectile.location.x + circle_diameter <= 0  # Borders' left
+            or projectile.location.x
+                >= self._game_map.game_field_size.x):  # Borders' right
+            self._result_collisions.append(
+                Collision(projectile, GameEvent.PROJECTILE_IS_OUT, None))
+
+    # Improvement: [_check_circle_projectile_basic_platform_collisions]
     def _check_projectile_basic_platform_collisions(self):
         pass
 
 
 class Collision:
+    # Improvement: Is this field really needed? Game engine always knows
+    #  what object was moving when it asks for collisions
     _moving_object: MovableObject
+
     _game_event: 'GameEvent'
 
     # May be 'None'. For example, if game object is out of game field's borders
@@ -298,6 +317,9 @@ class GameEvent(Enum):
     PLAYER_BOTTOM_BASIC_PLATFORM = object()
 
     PLAYER_BUFF = object()
+
+    PROJECTILE_IS_OUT = object()
+    # Improvement: PROJECTILE_BASIC_PLATFORM = object()
 
 
 class CollisionsProcessorException(ApplicationException):

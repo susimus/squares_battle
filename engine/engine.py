@@ -87,8 +87,7 @@ class GameEngine(EventListener):
                         self._update_player_state(movable_object)
 
                     elif isinstance(movable_object, ProjectileObject):
-                        # Now only player can fire projectiles
-                        self._update_player_projectile_state(movable_object)
+                        self._update_projectile_state(movable_object)
 
                     else:
                         GameEngineException(
@@ -96,9 +95,40 @@ class GameEngine(EventListener):
                             "method, got [movable_object] with unknown type: "
                             + movable_object.__class__.__name__)
 
+            def _update_projectile_state(
+                    self, projectile: ProjectileObject):
+                collisions: List[Collision] = (
+                    self._collisions_processor.get_collisions(
+                        projectile, projectile.moving_vector))
+
+                for collision in collisions:
+                    self._process_projectile_collision(projectile, collision)
+
+                if not projectile.should_be_despawned:
+                    projectile.location += projectile.moving_vector
+
             @staticmethod
-            def _update_player_projectile_state(projectile: ProjectileObject):
-                projectile.location += projectile.moving_vector
+            def _process_projectile_collision(
+                    projectile: ProjectileObject,
+                    collision: Collision):
+                if collision.collided_object is None:
+                    if collision.game_event is GameEvent.PROJECTILE_IS_OUT:
+                        projectile.should_be_despawned = True
+                    else:
+                        raise GameEngineException(
+                            '[_process_projectile_collision] switch got '
+                            'wrong [collision]',
+                            '[collided_object] -> [None]',
+                            '(UNKNOWN) [game_event] -> '
+                            + '[' + collision.game_event.name + ']')
+
+                else:
+                    raise GameEngineException(
+                        '[_process_projectile_collision] switch got '
+                        'wrong [collision]',
+                        '(UNKNOWN) [collided_object] -> '
+                        + '[' + collision.collided_object.__class__.__name__
+                        + ']')
 
             def _refresh_global_movement_multipliers(self):
                 self._PMS_gb_multiplier = self._IJV_gb_multiplier = 1
@@ -526,6 +556,8 @@ class GameEngine(EventListener):
         # Game loop is in a daemon thread so it will proceed until user
         # interface thread is closed
         while True:
+            print(len(self._game_map.movable_objects))  # debug
+
             self._map_updater.update_map()
 
             self._gui.render()
