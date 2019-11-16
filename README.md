@@ -90,9 +90,9 @@ Squares fight each other for the win!
 Name                             Stmts   Miss  Cover
 ----------------------------------------------------
 engine\__init__.py                   2      0   100%
-engine\collisions_processor.py      99     13    87%
-engine\engine.py                   173    173     0%
+engine\collisions_processor.py     104     17    84%
+engine\engine.py                   183    183     0%
 engine\game_objects.py              63     12    81%
 ----------------------------------------------------
-TOTAL                              337    198    41%                                                                    
+TOTAL                              352    212    40%                                                                  
 ```
