@@ -4,7 +4,7 @@ Squares fight each other for the win!
 
 #### Версия
 
-3
+4
 
 #### Автор 
 
@@ -79,18 +79,20 @@ Squares fight each other for the win!
 
 - **A/D** - движение влево/вправо
 - **Space** - прыжок 
+- **1**\**2** - переключение оружия
  
 #### ПОДРОБНОСТИ РЕАЛИЗАЦИИ
 
-Вся логика в папке 'engine' имеет покрытие тестами не менее 80%
+Вся логика в папке 'engine' имеет покрытие тестами не менее 80% ('engine.py'
+пока что без тестов из-за проблемы с импортирование tkinter'a)
 
 ```
 Name                             Stmts   Miss  Cover
 ----------------------------------------------------
 engine\__init__.py                   2      0   100%
-engine\collisions_processor.py      92      8    91%
-engine\engine.py                    97     19    80%
-engine\game_objects.py              49      8    84%
+engine\collisions_processor.py      99     13    87%
+engine\engine.py                   173    173     0%
+engine\game_objects.py              63     12    81%
 ----------------------------------------------------
-TOTAL                              240     35    85%                                                                      
+TOTAL                              337    198    41%                                                                    
 ```
