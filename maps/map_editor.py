@@ -64,7 +64,7 @@ class MapEditor(tk_Frame):
     def _init_slave_widgets(self):
         self._game_gui = GameGUI(
             input_widgets_root=self.master, master=self)
-        self._game_gui.init(self._game_map, EventListener())
+        self._game_gui.init(self._game_map, [EventListener()])
         self._game_gui.grid(row=0, column=0, rowspan=8)
 
         self._init_creation_buttons()
