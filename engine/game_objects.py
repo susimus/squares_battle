@@ -159,7 +159,7 @@ class MachineGunProjectile(ProjectileObject):
     firing projectile with some angle from actual cursor direction
     """
     # Angle can scatter in this abs radius of radians from zero
-    ANGLE_SCATTER_RADIUS: float = 0.0872665  # = 5 degrees
+    ANGLE_SCATTER_RADIUS: float = 0.0349066  # = 2 degrees
 
     CIRCLE_DIAMETER: int = 10
 
