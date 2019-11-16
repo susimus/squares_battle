@@ -158,9 +158,7 @@ class MachineGunProjectile(ProjectileObject):
     Average sized circle that flies forward with high speed with a chance of
     firing projectile with some angle from actual cursor direction
     """
-    # Angle can scatter in this abs radius from zero
-    #
-    # TODO: Optimize this
+    # Angle can scatter in this abs radius of radians from zero
     ANGLE_SCATTER_RADIUS: float = 0.0872665  # = 5 degrees
 
     CIRCLE_DIAMETER: int = 10

@@ -337,7 +337,6 @@ class GameEngine(EventListener):
                 elif key_code == self._KEY_CODE_2:
                     self._selected_weapon = self._Weapons.MachineGun
 
-            # Implement [spawn_player_projectiles]
             def spawn_player_projectiles(self):
                 with self._lmb_event_lock:
                     current_lmb_event = self._lmb_event
@@ -376,7 +375,6 @@ class GameEngine(EventListener):
                     elif self._selected_weapon is self._Weapons.MachineGun:
                         if (current_lmb_event.type.name
                                 in ['ButtonPress', 'Motion']):
-                            # TODO: Projectile scatter
                             moving_vector: Vector2D = Vector2D(0, 0)
 
                             # In radians
