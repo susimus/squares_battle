@@ -409,7 +409,7 @@ class GameEngine(EventListener):
                     + Player.HAND_LOCATION)
 
                 non_unit_vector: Vector2D = (
-                        cursor_location - abs_player_hand_location)
+                    cursor_location - abs_player_hand_location)
                 non_unit_vector_length: float = sqrt(
                     non_unit_vector.x ** 2 + non_unit_vector.y ** 2)
 

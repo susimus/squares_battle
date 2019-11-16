@@ -208,7 +208,7 @@ class GameGUI(Canvas):
             '<ButtonRelease-1>', notify_listeners_about_lmb_event)
         self._widgets_root.bind(
             '<B1-Motion>', notify_listeners_about_lmb_event)
-        
+
         # EventListener bindings
         self._widgets_root.bind(
             '<KeyPress>', notify_listeners_about_key_pressed)
