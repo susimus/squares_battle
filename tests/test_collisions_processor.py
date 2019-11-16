@@ -29,7 +29,7 @@ test_map_2: GameMap = GameMap(
 
 test_map_3: GameMap = GameMap(
     Vector2D(100, 100),
-    [BasicPlatform(Vector2D(30, 30), 10, 10)],
+    [BasicPlatform(10, 10, Vector2D(30, 30))],
     [Player(Vector2D(0, 0))])
 
 
