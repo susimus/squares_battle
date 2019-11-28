@@ -1,3 +1,7 @@
+from time import (
+    time as current_time_in_seconds,
+    sleep as time_sleep)
+from threading import Thread
 from argparse import ArgumentParser, Namespace
 from typing import TextIO, Optional
 from sys import exit as sys_exit
@@ -11,6 +15,8 @@ from os.path import (
 from engine import ApplicationException
 from engine.engine import GameEngine
 from maps import RawMapsContainer
+from user_interface.game_ui import GameGUI
+from maps import GameMap
 
 
 def exit_with_exception(
@@ -86,14 +92,12 @@ def run_launcher_logic():
         'Enter map name. Raw maps names have format: "raw <name>". Non raw '
         'maps will be loaded from "maps" folder.\n')
 
-    game_engine: Optional[GameEngine] = None
+    game_map: Optional[GameMap] = None
 
     if map_name.startswith('raw '):
         try:
-            game_engine = GameEngine(
-                getattr(
-                    RawMapsContainer,
-                    'get_map_' + map_name.split(' ')[1])())
+            game_map = getattr(
+                RawMapsContainer, 'get_map_' + map_name.split(' ')[1])()
 
         except AttributeError:
             exit_with_exception(
@@ -109,8 +113,7 @@ def run_launcher_logic():
                 map_name)
 
             with open(map_path, 'rb') as map_file_handle:
-                game_engine = GameEngine(
-                    pickle_load(map_file_handle))
+                game_map = pickle_load(map_file_handle)
 
         except OSError as occurred_err:
             exit_with_exception(
@@ -118,8 +121,62 @@ def run_launcher_logic():
                 LauncherException(*occurred_err.args),
                 arguments.debug)
 
+    if game_map is None:
+        exit_with_exception(
+            "Something broke inside game",
+            ApplicationException('[game_map] is [None]'),
+            arguments.debug)
+
+    game_engine: GameEngine = GameEngine(game_map)
+    gui: GameGUI = GameGUI()
+
     try:
-        game_engine.start_game()
+        gui.init(game_map, game_engine.get_event_listeners())
+
+        def game_loop(game_engine_: GameEngine, gui_: GameGUI):
+            def time_alignment():
+                """Time alignment for CPU power saving
+
+                Игра работает в режиме 60 итераций игрового цикла (обновление И
+                рендер уровня в одной итерации) в секунду.
+
+                По сути, секунда разбита на 60 частей. Выравнивание происходит
+                таким образом, что в начале каждой 1\60 части секунды должна
+                начинаться КАЖДАЯ итерация игрового цикла. НЕТ гарантии, что
+                при таком подходе не будет потеряна одна из 1\60-ой частей
+                секунды
+
+                Таким образом, каждое обновление уровня происходит с рассчетом
+                ТОЛЬКО на текущую 1/60 часть секунды. Это позволяет избавиться
+                от дробных величин при модификации позиции движущихся объектов.
+                """
+                # All time below in milliseconds
+                #
+                # one_iteration_time = 1000 / 60 = 16.666666666666668
+                # millis_in_current_second = (
+                #     current_time_in_seconds() * 1000 % 1000)
+                time_sleep(
+                    (16.666666666666668
+                     - ((current_time_in_seconds() * 1000 % 1000)
+                        % 16.666666666666668))
+                    / 1000)
+
+            # Game loop locates in a daemon thread so it will proceed until
+            # user interface thread is closed
+            while True:
+                game_engine_.update_map()
+
+                gui_.render()
+
+                time_alignment()
+
+        Thread(
+            target=game_loop,
+            args=(game_engine, gui),
+            daemon=True).start()
+        # Right here several renderings CANNOT be lost
+        gui.run_gui_loop()
+
     except ApplicationException as occurred_exc:
         # Improvement: Different messages for user. Switch only message!
         exit_with_exception(
