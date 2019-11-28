@@ -8,6 +8,7 @@ from threading import Event
 from maps import GameMap
 from engine.game_objects import *
 from engine import ApplicationException
+from user_interface import EventListener
 
 
 class GameGUI(Canvas):
@@ -235,23 +236,6 @@ class GameGUI(Canvas):
     @staticmethod
     def run_gui_loop():
         tk_mainloop()
-
-
-class EventListener:
-    """Interface for circular imports problem resolving.
-
-    It is impossible to have GameEngine import here and GUI import in
-    'engine.py' at the same time so GameEngine have this interface.
-    """
-    def key_released(self, key_code: int):
-        pass
-
-    def key_pressed(self, key_code: int):
-        pass
-
-    def lmb_event_happened(self, event):
-        """lmb -> left mouse button"""
-        pass
 
 
 class GameUIException(ApplicationException):
