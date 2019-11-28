@@ -80,6 +80,28 @@ Squares fight each other for the win!
 - **A/D** - движение влево/вправо
 - **Space** - прыжок 
 - **1**\**2** - переключение оружия
+
+
+#### Доступные карты
+
+В виде кода:
+
+* raw 1
+
+    One player only
+    
+* raw 2
+
+    Player with three platforms
+
+* raw 3
+
+    Player with two buffs
+
+* raw 4
+
+    Player with handgun and machine gun projectiles
+
  
 #### ПОДРОБНОСТИ РЕАЛИЗАЦИИ
 
