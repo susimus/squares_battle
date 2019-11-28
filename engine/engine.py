@@ -91,7 +91,7 @@ class GameEngine(EventListener):
                         + movable_object.__class__.__name__)
 
         def _update_projectile_state(
-                self, projectile: ProjectileObject):
+                self, projectile: ProjectileObject):  # pragma: no cover
             collisions: List[Collision] = (
                 self._collisions_processor.get_collisions(
                     projectile, projectile.moving_vector))
@@ -105,7 +105,7 @@ class GameEngine(EventListener):
         @staticmethod
         def _process_projectile_collision(
                 projectile: ProjectileObject,
-                collision: Collision):
+                collision: Collision):  # pragma: no cover
             if collision.collided_object is None:
                 if collision.game_event is GameEvent.PROJECTILE_IS_OUT:
                     projectile.should_be_despawned = True
@@ -302,7 +302,7 @@ class GameEngine(EventListener):
 
             return self._vertical_velocity
 
-        def update_immovable_objects_states(self):
+        def update_immovable_objects_states(self):  # pragma: no cover
             for immovable_object in self._game_map.immovable_objects:
                 if isinstance(immovable_object, AbstractBuff):
                     self._update_buff_state(immovable_object)
@@ -383,6 +383,7 @@ class GameEngine(EventListener):
                 if self._selected_weapon is self._Weapons.Handgun:
                     if current_lmb_event.type.name == 'ButtonRelease':
                         self._handgun_can_fire = True
+
                     elif (current_lmb_event.type.name == 'ButtonPress'
                             and self._handgun_can_fire):
                         moving_vector: Vector2D = Vector2D(
