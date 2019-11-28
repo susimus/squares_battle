@@ -127,6 +127,9 @@ class Player(MovableObject):
     current_buffs: List[AbstractBuff] = dataclass_field(default_factory=list)
 
 
+# Improvement: Would be better, I think, add "dataclass" decorator back.
+#  Anyway compiler do not want correctly highlight actual parameters in
+#  constructor -_-
 class ProjectileObject(MovableObject):
     PROJECTILE_SPEED: int = 20  # TODO: Optimize this
 
