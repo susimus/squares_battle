@@ -14,10 +14,9 @@ from engine.engine import GameEngine
 from maps import GameMap
 
 
-class VelocityGettersTests(TestCase):
-    _state_updater: GameEngine.MapUpdater.StateUpdater = (
-        GameEngine.MapUpdater.StateUpdater(
-            GameEngine(GameMap(Vector2D(100, 100), [], []))))
+class StateUpdaterTests(TestCase):
+    _state_updater: GameEngine._StateUpdater = GameEngine._StateUpdater(
+            GameEngine(GameMap(Vector2D(100, 100), [], [])))
 
     def test_velocity_to_the_left(self):
         self.assertEqual(
@@ -55,6 +54,9 @@ class VelocityGettersTests(TestCase):
 
         assert self._state_updater._get_vertical_velocity(set()) == 12
 
+
+class GameObjectsSpawnerTests(TestCase):
+    _game_objects_spawner: GameEngine._GameObjectsSpawner
 
 if __name__ == '__main__':
     unittest_main()

@@ -14,10 +14,10 @@ from user_interface import EventListener
 
 # Improvement: ACTUALLY, GameEngine use EventListener methods ONLY for
 #  adding keycodes into [_keys_pressed]. It would be more logical if
-#  [StateUpdater] and [GameObjectsSpawner] have these interface
+#  [_StateUpdater] and [_GameObjectsSpawner] have these interface
 #  implemented
 class GameEngine(EventListener):
-    class StateUpdater(EventListener):
+    class _StateUpdater(EventListener):
         # Improvement: Relocate some global vars from here to game
         #  objects' classes. E.g., [_PLAYER_MOVE_SPEED] -> [Player]
 
@@ -317,7 +317,7 @@ class GameEngine(EventListener):
             buff.check_buff_expiration(
                 self._get_game_loop_iterations_count())
 
-    class GameObjectsSpawner(EventListener):
+    class _GameObjectsSpawner(EventListener):
         """Spawns AND despawns game objects"""
         class _Weapons(Enum):
             Handgun: int = 1
@@ -351,11 +351,11 @@ class GameEngine(EventListener):
 
             self._handgun_can_fire = True
 
-        def lmb_event_happened(self, event):
+        def lmb_event_happened(self, event):  # pragma: no cover
             with self._lmb_event_lock:
                 self._lmb_event = event
 
-        def key_pressed(self, key_code: int):
+        def key_pressed(self, key_code: int):  # pragma: no cover
             if key_code == self._KEY_CODE_1:
                 self._selected_weapon = self._Weapons.Handgun
 
@@ -468,8 +468,8 @@ class GameEngine(EventListener):
     # OR require too much time - gameplay would be ruined anyway
     _game_map: GameMap
 
-    _state_updater: StateUpdater
-    _game_objects_spawner: GameObjectsSpawner
+    _state_updater: _StateUpdater
+    _game_objects_spawner: _GameObjectsSpawner
 
     def __init__(self, input_game_map: GameMap):
         self._game_loop_iterations_count = 0
@@ -481,8 +481,8 @@ class GameEngine(EventListener):
 
         self._game_map = input_game_map
 
-        self._state_updater = self.StateUpdater(self)
-        self._game_objects_spawner = self.GameObjectsSpawner(self)
+        self._state_updater = self._StateUpdater(self)
+        self._game_objects_spawner = self._GameObjectsSpawner(self)
 
         # If game map without movable objects is given then engine spawns
         # player on (0, 0) coordinates
