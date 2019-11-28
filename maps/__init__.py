@@ -83,5 +83,5 @@ class RawMapsContainer:
             Vector2D(*DEFAULT_RESOLUTION),
             [],
             [Player(Vector2D(0, 0)),
-             HandgunProjectile(Vector2D(10, 10)),
-             MachineGunProjectile(Vector2D(100, 10))])
+             HandgunProjectile(Vector2D(0, 0), Vector2D(10, 10)),
+             MachineGunProjectile(Vector2D(0, 0), Vector2D(100, 10))])
